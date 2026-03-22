@@ -1,117 +1,101 @@
-Below is a complete **README.md** for your `amika-alankara-portfolio` repository. It reflects the content of your CV site, provides clear documentation, and maintains a professional tone. You can copy and paste this directly into your repo.
+### **Amika Alankara – AI & Data Science Portfolio**
 
-```markdown
-# Amika Alankara – AI & Data Science Portfolio
+This repository contains the source code for my professional portfolio and CV website. The site is intended to serve as an interactive resume for potential employers, collaborators, and academic peers.
 
-Welcome to my personal portfolio website! This project showcases my academic background, technical skills, projects, and professional journey as an AI & Data Science student. The site is fully responsive and serves as my online CV.
+🔗 **Live Site:** [https://amika1118.github.io/amika-alankara-portfolio](https://www.google.com/search?q=https://amika1118.github.io/amika-alankara-portfolio)  
+*(Ensure this URL is updated once GitHub Pages is activated.)*
 
-🔗 **Live Demo:** [https://your-username.github.io/amika-alankara-portfolio](https://your-username.github.io/amika-alankara-portfolio)  
-*(Replace with your actual GitHub Pages URL after deployment)*
+-----
 
----
+## **Purpose**
 
-## ✨ Features
+The website presents my qualifications as a second-year BSc (Hons) Artificial Intelligence & Data Science student at the Informatics Institute of Technology (affiliated with Robert Gordon University, UK). It highlights:
 
-- **Responsive Design** – Optimised for desktops, tablets, and mobile devices.
-- **About Section** – Detailed introduction, academic achievements, and research interests.
-- **Project Gallery** – Showcases key projects with tech stacks, key features, and GitHub links.
-- **Skills & Tools** – Visual skill bars and tag clouds for programming, data science, and web technologies.
-- **Education Timeline** – Structured academic history with coursework highlights.
-- **Contact Form** – Built-in form for messages (client-side validation + demo submission handler).
-- **Interactive UI** – Smooth scrolling, scroll animations, hover effects, and mobile menu toggle.
-- **Downloadable CV** – Direct link to download my latest resume (PDF).
+  * **Academic background** and relevant coursework.
+  * **Technical skills** in programming, data science, and web development.
+  * **Featured projects** including AgriSmart (agricultural demand prediction) and my research into EEG-based translation.
+  * **Professional contact information** and a functional contact form.
 
----
+This repository is intended **solely for demonstrating my work** to recruiters, hiring managers, and collaborators. The code is not licensed for reuse.
 
-## 🛠️ Technologies Used
+-----
 
-- **HTML5** – Semantic structure  
-- **CSS3** – Custom styles, Flexbox, Grid, animations, and responsive breakpoints  
-- **JavaScript (ES6+)** – DOM manipulation, event handling, form validation, intersection observers  
-- **Font Awesome 6** – Icons for visual enhancement  
-- **Google Fonts (Inter)** – Clean and modern typography  
+## **Technologies Used**
 
-No external frameworks or libraries – pure vanilla implementation for fast loading and full control.
+  * **HTML5** – Semantic markup.
+  * **CSS3** – Custom styling, responsive layout, and animations.
+  * **JavaScript (ES6+)** – Interactivity, form validation, and scroll effects.
+  * **Font Awesome 6** – Icons.
+  * **Google Fonts (Inter)** – Typography.
 
----
+All code is original and implemented without external frameworks to ensure maximum performance and maintainability.
 
-## 📁 Project Structure
+-----
 
-```
+## **Repository Structure**
+
+```text
 amika-alankara-portfolio/
-├── index.html          # Main HTML file
-├── style.css           # All custom styles
-├── script.js           # JavaScript functionality
-├── assets/             # (Optional) images, PDFs, etc.
-│   ├── pictures/       # Profile picture
-│   └── cv_folder/      # Resume PDF
-└── README.md           # This file
+├── index.html          # Main HTML document
+├── style.css           # All styles and responsive design
+├── script.js           # JavaScript functionality and animations
+├── assets/             # Static assets (images, resume PDF)
+│   ├── pictures/       # Profile images and project thumbnails
+│   └── cv_folder/      # CV/Resume PDF
+└── README.md           # Project documentation
 ```
 
-*Note: The site references external resources (`../pictures/user_pic.jpeg` and `../cv_folder/Amika Alankara.pdf`). Ensure these paths are correct after deployment.*
+> **Note:** The HTML references assets using relative paths (e.g., `assets/pictures/user_pic.jpeg`). Ensure these paths are maintained when modifying the directory structure.
 
----
+-----
 
-## 🚀 Local Development
+## **Local Viewing**
 
-To run the site locally:
+If you wish to view the site locally:
 
-1. **Clone the repository**  
-   ```bash
-   git clone https://github.com/your-username/amika-alankara-portfolio.git
-   cd amika-alankara-portfolio
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Amika1118/amika-alankara-portfolio.git
+    cd amika-alankara-portfolio
+    ```
+2.  Open `index.html` in any modern web browser.
 
-2. **Open the project**  
-   Simply open `index.html` in your favourite browser.  
-   *No build steps or dependencies required.*
+No build steps or local servers are required.
 
-3. **Make adjustments**  
-   Edit the HTML, CSS, or JavaScript as needed. Changes are immediately reflected upon refresh.
+-----
 
----
+## **Deployment**
 
-## 📄 License
+The site is optimized for deployment via **GitHub Pages**. To publish your own version:
 
-This project is open-source and available under the **MIT License**.  
-You are free to use, modify, and distribute the code for personal or commercial purposes, provided attribution is given.
+1.  Push the repository to GitHub.
+2.  Navigate to **Settings \> Pages**.
+3.  Select the **main** branch and the **root (/)** folder.
+4.  The site will be live at your custom GitHub Pages URL.
 
-*(If you prefer to keep your code protected, you may replace the MIT license with a simple copyright notice – e.g., "© Amika Alankara. All rights reserved.")*
+-----
 
-For the full license text, see the [LICENSE](LICENSE) file in this repository.
+## **Copyright & Usage**
 
----
+© **Amika Alankara**. All rights reserved.
 
-## 📬 Contact
+This repository and its contents (including source code, design, and assets) are provided **for viewing and demonstration purposes only**. You may view the site and inspect the code for educational purposes, but you **may not copy, modify, distribute, or use any part of this work** for your own projects without explicit written permission from the author.
 
-- **Email:** [amika.alankara@student.iit.ac.lk](mailto:amika.alankara@student.iit.ac.lk)  
-- **LinkedIn:** [linkedin.com/in/amika-ranmeth](https://linkedin.com/in/amika-ranmeth)  
-- **GitHub:** [github.com/Amika1118](https://github.com/Amika1118)  
-- **Twitter/X:** [@amika_alankara](https://x.com/amika_alankara)  
-- **Upwork:** [Upwork Profile](https://www.upwork.com/freelancers/~01e0bb28542b1cc5ad)
+This code is **not open source** and is not licensed for reuse. Unauthorized reproduction constitutes copyright infringement.
 
-Feel free to reach out for collaborations, internships, or any AI/data science discussions!
+-----
 
----
+## **Contact**
 
-## 🙏 Acknowledgments
+  * **Email:** [amika.20240291@iit.ac.lk](mailto:amika.20240291@iit.ac.lk)
+  * **LinkedIn:** [linkedin.com/in/amika-ranmeth](https://linkedin.com/in/amika-ranmeth)
+  * **GitHub:** [github.com/Amika1118](https://github.com/Amika1118)
 
-- **Font Awesome** – Icons used throughout the site  
-- **Google Fonts** – Inter font family  
-- **GitHub Pages** – Free hosting for this portfolio  
-- **IIT & Robert Gordon University** – Academic foundation and support
+-----
 
----
+## **Acknowledgments**
 
-## 🔄 Changelog
+  * Informatics Institute of Technology (IIT) and Robert Gordon University for academic support.
+  * Font Awesome and Google Fonts for design resources.
 
-- **March 2026** – Initial release with full portfolio content, projects, and contact form.
-```
-
-**Notes for you:**
-- Replace `your-username` with your actual GitHub username in the live demo URL.
-- If you decide to use a different license (e.g., no license), update the **License** section accordingly.  
-- The local setup instructions assume you keep the folder structure exactly as in your code. If you move assets, adjust the paths accordingly.  
-- The README mentions a `LICENSE` file – you should create one (MIT template or your own notice) or remove that line if you choose not to include a license.
-
-This README provides a professional overview and makes your repository look complete and well-documented – a great impression for recruiters and collaborators.
+-----
