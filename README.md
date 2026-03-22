@@ -2,9 +2,7 @@
 
 This repository contains the source code for my professional portfolio and CV website. The site is intended to serve as an interactive resume for potential employers, collaborators, and academic peers.
 
-🔗 **Live Site:** [https://amika1118.github.io/amika-alankara-portfolio]((https://amika1118.github.io/amika-alankara-portfolio/))  
-*(Ensure this URL is updated once GitHub Pages is activated.)*
-
+🔗 **Live Site:** [https://amika1118.github.io/amika-alankara-portfolio/](https://amika1118.github.io/amika-alankara-portfolio/)
 -----
 
 ## **Purpose**
