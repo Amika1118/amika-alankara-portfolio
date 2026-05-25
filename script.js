@@ -840,7 +840,7 @@ Always be professional, slightly playful, and represent Amika accurately. Don't 
     // If not in a contact flow, check for contact trigger
     if (/(contact|reach out|get in touch|hire|message me|send a message|contact me)/i.test(lower)) {
       contactFlow.stage = 'purpose';
-      appendChatMessage('Sure — what is the purpose of the message? Please choose one:', 'bot');
+      appendChatMessage('Sure - what is the purpose of the message? Please choose one:', 'bot');
       appendQuickReplies(['Internship', 'Collaboration', 'Project Inquiry', 'Research', 'Other']);
       return;
     }
@@ -868,7 +868,7 @@ Always be professional, slightly playful, and represent Amika accurately. Don't 
     // If user explicitly asks to contact, start purpose flow
     if (/(contact|reach out|get in touch|hire|message me|send a message|contact me)/i.test(lower)) {
       contactFlow.stage = 'purpose';
-      appendChatMessage('Sure — what is the purpose of the message? Please choose one:', 'bot');
+      appendChatMessage('Sure - what is the purpose of the message? Please choose one:', 'bot');
       appendQuickReplies(['Internship', 'Collaboration', 'Project Inquiry', 'Research', 'Other']);
       setChatTyping(false);
       return;
@@ -1066,7 +1066,7 @@ Always be professional, slightly playful, and represent Amika accurately. Don't 
     });
 
     // Welcome message
-    appendChatMessage("Hi! I'm Amika's AI assistant. Ask me about her projects, skills, or background — or I can fill the contact form for you.", 'bot');
+    appendChatMessage("Hi! I'm Amika's AI assistant. Ask me about her projects, skills, or background - or I can fill the contact form for you.", 'bot');
   }
 
   // ========================
