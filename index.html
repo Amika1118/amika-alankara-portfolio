@@ -1,538 +1,528 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amika Alankara - AI & Data Science Developer | Colombo, Sri Lanka</title>
+    <title>Amika Alankara - AI &amp; Data Science Developer | Colombo, Sri Lanka</title>
     <meta name="description"
-        content="Portfolio of Amika Alankara - second-year AI & Data Science student at IIT building ML models, data pipelines, and full-stack applications.">
+        content="Portfolio of Amika Alankara - AI & Data Science student at IIT building ML models, data pipelines, and full-stack applications.">
     <link rel="canonical" href="https://amika1118.github.io/amika-alankara-portfolio/">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Amika Alankara - AI & Data Science Developer">
     <meta property="og:description"
-        content="Building ML models, data pipelines, and web applications. Second-year AI & Data Science student at IIT, Colombo.">
-    <meta property="og:image" content="https://amika1118.github.io/amika-alankara-portfolio/pictures/user_pic.jpg">
+        content="Building ML models, data pipelines, and web applications. AI & Data Science student at IIT, Colombo.">
     <meta property="og:url" content="https://amika1118.github.io/amika-alankara-portfolio/">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Amika Alankara — AI & Data Science Developer">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Amika Alankara - AI & Data Science Developer">
     <meta name="twitter:description" content="Building ML models, data pipelines, and web applications.">
-    <meta name="twitter:image" content="https://amika1118.github.io/amika-alankara-portfolio/pictures/user_pic.jpg">
     <meta name="twitter:site" content="@amika_alankara">
 
-    <!-- Preconnects -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Lenis smooth scroll -->
-    <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.23/dist/lenis.css">
-    <script src="https://unpkg.com/lenis@1.3.23/dist/lenis.min.js"></script>
-
-    <!-- GSAP + ScrollTrigger + Flip -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
-
-    <!-- Splitting.js -->
-    <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
-    <script src="https://unpkg.com/splitting/dist/splitting.min.js"></script>
-
-    <!-- Vanilla Tilt -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
-
-    <!-- JSON-LD -->
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": "Amika Alankara",
-            "url": "https://amika1118.github.io/amika-alankara-portfolio/",
-            "jobTitle": "AI & Data Science Student",
-            "alumniOf": "Informatics Institute of Technology",
-            "sameAs": [
-                "https://github.com/Amika1118",
-                "https://www.linkedin.com/in/amika-ranmeth/"
-            ]
-        }
-    </script>
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Amika Alankara",
+  "url": "https://amika1118.github.io/amika-alankara-portfolio/",
+  "jobTitle": "AI & Data Science Student",
+  "alumniOf": "Informatics Institute of Technology",
+  "sameAs": [
+    "https://github.com/Amika1118",
+    "https://www.linkedin.com/in/amika-ranmeth/",
+    "https://x.com/amika_alankara/"
+  ]
+}
+</script>
 
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div id="page-progress" aria-hidden="true"></div>
+    <div id="scrollProg"></div>
 
-    <!-- Skip link -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-
-    <!-- Custom cursor -->
-    <div class="cursor-dot" aria-hidden="true"></div>
-    <div class="cursor-ring" aria-hidden="true"></div>
-    <!-- Cursor ripple container -->
-    <div class="cursor-ripple" id="cursor-ripple" aria-hidden="true"></div>
-
-    <!-- Preloader -->
-    <div id="preloader" aria-hidden="true" role="presentation">
-        <div class="preloader-initials">AA</div>
-        <div class="preloader-bar-track">
-            <div class="preloader-bar" id="preloader-bar"></div>
+    <!-- ============================================================
+     PRELOADER
+    ============================================================= -->
+    <div id="preloader" aria-hidden="true">
+        <div class="preloader-mark-wrap">
+            <div class="preloader-glow" aria-hidden="true"></div>
+            <div class="preloader-ring" aria-hidden="true"></div>
+            <div class="preloader-mark">AA</div>
+        </div>
+        <div class="preloader-track">
+            <div class="preloader-bar" id="preloaderBar"></div>
+        </div>
+        <div class="preloader-meta">
+            <span class="preloader-status" id="preloaderStatus">Booting up</span>
+            <span class="preloader-pct" id="preloaderPct">0%</span>
         </div>
     </div>
 
-    <!-- ================================================
-       WELCOME POPUP
-     ================================================ -->
-    <div id="welcome-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Welcome message">
-        <div class="welcome-modal" id="welcome-modal">
+    <!-- ============================================================
+     WELCOME POPUP
+============================================================= -->
+    <div id="welcomeOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Welcome message">
+        <div class="welcome-modal">
             <div class="welcome-emoji" aria-hidden="true">👀</div>
             <h2 class="welcome-title">Hey, you actually showed up.</h2>
-            <p class="welcome-body">
-                Stick around and I'll show you what I've been building.<br>
-                <span class="welcome-accent">No cookies, just code.</span>
-            </p>
-            <button class="welcome-cta" id="welcome-cta" aria-label="Let's go — enter the portfolio">
-                Let's go →
-            </button>
-            <button class="welcome-dismiss" id="welcome-dismiss" aria-label="Maybe later, dismiss welcome message">
-                maybe later
-            </button>
+            <p class="welcome-body">Stick around and I'll show you what I've been building.<br><span
+                    class="welcome-accent">No cookies, just code.</span></p>
+            <button class="btn btn-fill welcome-cta" id="welcomeCta">Let's go →</button>
+            <button class="welcome-dismiss" id="welcomeDismiss">maybe later</button>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <header>
-        <nav id="navbar" role="navigation" aria-label="Main navigation">
-            <div class="container nav-inner">
-                <a href="#hero" class="nav-logo">Amika<span>.</span></a>
-                <ul class="nav-links" role="list">
-                    <li><a href="#about" class="nav-link" data-section="about">About</a></li>
-                    <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
-                    <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
-                    <li><a href="#education" class="nav-link" data-section="education">Education</a></li>
-                    <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
-                </ul>
-                <a href="#" class="btn-cv-nav" aria-label="Download CV">Download CV</a>
-                <button class="hamburger" id="hamburger" aria-expanded="false" aria-controls="mobile-nav"
-                    aria-label="Open navigation menu">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
+    <nav class="nav" id="nav">
+        <a href="#home" class="nav-logo">AMIKA<span class="dot"></span></a>
+        <ul class="nav-list" id="navList">
+            <li><a href="#featured" class="nl" data-section="featured">Featured</a></li>
+            <li><a href="#about" class="nl" data-section="about">About</a></li>
+            <li><a href="#projects" class="nl" data-section="projects">Projects</a></li>
+            <li><a href="#skills" class="nl" data-section="skills">Skills</a></li>
+            <li><a href="#education" class="nl" data-section="education">Education</a></li>
+            <li><a href="#contact" class="nl" data-section="contact">Contact</a></li>
+        </ul>
+        <div class="nav-right">
+            <a href="mailto:amika.20240191@iit.ac.lk?subject=Request%20for%20CV" class="nav-cv">Request CV</a>
+            <button class="icon-btn" id="motionToggle" aria-label="Pause animations" aria-pressed="false">
+                <i class="fas fa-pause" id="motionIcon" aria-hidden="true"></i>
+            </button>
+            <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+                <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+                </svg>
+            </button>
+            <button class="burger" id="burger" aria-label="Open menu"
+                aria-expanded="false"><span></span><span></span></button>
+        </div>
+    </nav>
 
-    <!-- Mobile nav overlay -->
-    <div id="mobile-nav" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-        <a href="#about" class="mobile-nav-link">About</a>
-        <a href="#projects" class="mobile-nav-link">Projects</a>
-        <a href="#skills" class="mobile-nav-link">Skills</a>
-        <a href="#education" class="mobile-nav-link">Education</a>
-        <a href="#contact" class="mobile-nav-link">Contact</a>
-        <a href="#" class="mobile-nav-link" style="color:var(--accent)">Download CV</a>
+    <div class="drawer" id="drawer" aria-hidden="true">
+        <button class="drawer-close" id="drawerClose" aria-label="Close menu">&times;</button>
+        <a href="#featured" class="dl">Featured</a>
+        <a href="#about" class="dl">About</a>
+        <a href="#projects" class="dl">Projects</a>
+        <a href="#skills" class="dl">Skills</a>
+        <a href="#education" class="dl">Education</a>
+        <a href="#contact" class="dl">Contact</a>
+        <a href="mailto:amika.20240191@iit.ac.lk?subject=Request%20for%20CV" class="drawer-cv">Request CV</a>
     </div>
+    <div class="backdrop" id="backdrop"></div>
 
-    <main id="main-content">
+    <main>
 
-        <!-- ================================================
-         HERO
-    ================================================ -->
-        <section id="hero" aria-label="Hero introduction">
-            <div class="hero-bg" aria-hidden="true">
-                <div class="orb orb-1"></div>
-                <div class="orb orb-2"></div>
-                <div class="orb orb-3"></div>
-            </div>
-
-            <div class="hero-content container" style="padding-right:0">
-                <p class="hero-greeting">Hi, I'm</p>
-                <h1 class="hero-name" data-splitting>Amika Alankara</h1>
-
-                <div class="hero-typewriter" aria-live="polite">
-                    <span class="typewriter-static">I build </span><span class="typewriter-dynamic"
-                        id="typewriter-text"></span><span class="typewriter-cursor" id="typewriter-cursor">|</span>
-                </div>
-
-                <p class="hero-desc">
-                    AI &amp; Data Science student at IIT, building real systems with Python, Java, and React.
-                </p>
-
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <div class="stat-number" data-target="15" id="stat-projects">0</div>
-                        <div class="stat-label">Projects</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" data-target="7" id="stat-langs">0</div>
-                        <div class="stat-label">Languages</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" data-target="2028" id="stat-grades">2020</div>
-                        <div class="stat-label">Graduation Year</div>
-                    </div>
-                </div>
-
-                <div class="hero-ctas">
-                    <a href="#projects" class="btn btn-primary btn-magnetic">View My Work</a>
-                    <a href="#" class="btn btn-outline btn-magnetic">Download CV</a>
-                </div>
-
-                <div class="scroll-indicator" aria-hidden="true">
-                    <span class="scroll-text">Scroll to explore ↓</span>
-                    <div class="scroll-line"></div>
+        <!-- HERO -->
+        <section id="home" class="panel hero">
+            <div class="hero-bg">
+                <div class="hero-orb hero-orb-1"></div>
+                <div class="hero-orb hero-orb-2"></div>
+                <div class="hero-grid">
+                    <div class="hero-grid-lines"></div>
                 </div>
             </div>
-
-            <div class="hero-visual">
-                <div class="hero-visual-inner">
-                    <div class="hero-glow" aria-hidden="true"></div>
-                    <div class="hero-ring" aria-hidden="true">
-                        <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="190" cy="190" r="185" fill="none" stroke="rgba(108,99,255,0.3)"
-                                stroke-width="1.5" stroke-dasharray="12 8" />
-                        </svg>
+            <div class="hero-inner">
+                <div>
+                    <div class="eyebrow"><span class="live-dot"></span>AI &amp; Data Science · IIT Sri Lanka</div>
+                    <h1 class="hero-name">Amika<br>Alankara</h1>
+                    <p class="hero-role">I build <span id="typeText"></span><span class="cur"></span></p>
+                    <p class="hero-desc">AI &amp; Data Science student at IIT, building real systems with Python, Java,
+                        and React - ML pipelines, data engineering, and full-stack apps. Open to internships.</p>
+                    <div class="hero-stats">
+                        <div class="stat"><span class="stat-num" data-count="17">0</span><span
+                                class="stat-lbl">Projects</span></div>
+                        <div class="stat-div"></div>
+                        <div class="stat"><span class="stat-num" data-count="7">0</span><span
+                                class="stat-lbl">Languages</span></div>
+                        <div class="stat-div"></div>
+                        <div class="stat"><span class="stat-num" data-count="2028">0</span><span
+                                class="stat-lbl">Graduating</span></div>
                     </div>
-                    <div class="hero-photo">
-                        <img src="./pictures/user_pic.jpg" alt="Amika Alankara" loading="eager">
+                    <div class="hero-cta">
+                        <a href="#featured" class="btn btn-fill">View Work</a>
+                        <a href="mailto:amika.20240191@iit.ac.lk?subject=Request%20for%20CV"
+                            class="btn btn-line">Request CV</a>
                     </div>
+                    <div class="scroll-ind"><span class="ln"></span>SCROLL</div>
+                </div>
+                <div class="hero-avatar">
+                    <div class="avatar-ring-big"></div>
+                    <div class="avatar-glow-big"></div>
+                    <div class="avatar-mono-big" id="heroAvatarFallback">AA</div>
+                    <img src="profile.jpg" alt="Amika Alankara" class="avatar-photo-big" id="heroAvatarPhoto"
+                        onload="document.getElementById('heroAvatarFallback').style.display='none'; this.style.display='block';"
+                        onerror="this.style.display='none';">
                 </div>
             </div>
         </section>
 
-        <!-- ================================================
-         ABOUT
-    ================================================ -->
-        <section id="about" aria-label="About Amika Alankara">
+        <!-- FEATURED / SPOTLIGHT -->
+        <section id="featured" class="panel">
             <div class="container">
-                <div class="section-title-wrapper">
-                    <p class="section-label">Who I am</p>
-                    <h2 class="section-title" data-splitting>About Me</h2>
+                <div class="sec-head reveal">
+                    <div class="sec-label"><span class="num">00</span>// FEATURED</div>
+                    <h2 class="sec-title">Latest &amp; Best Work</h2>
+                    <p class="sec-sub">A curated pick of the newest and strongest builds - the full archive with
+                        everything else sits below.</p>
                 </div>
+                <div class="spotlight-grid">
+                    <article class="spotlight feat reveal">
+                        <span class="spot-badge spot-badge-top">Top Pick</span>
+                        <div class="spot-media"><span class="spot-media-ph">screenshot / demo</span><span
+                                class="spot-index">01</span></div>
+                        <div class="spot-body">
+                            <h3>Telco Churn Prediction</h3>
+                            <p>End-to-end ML pipeline across 7,000+ records - three models compared to flag customers
+                                likely to churn so a business can act before losing them.</p>
+                            <div class="spot-tags"><span>Python</span><span>Scikit-learn</span><span>Pandas</span></div>
+                            <a href="https://github.com/Amika1118/CM2604-Telco-Churn-Prediction" target="_blank"
+                                rel="noopener noreferrer" class="p-link spot-link">View project <i
+                                    class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                    <article class="spotlight reveal" style="--rd:.06s">
+                        <span class="spot-badge spot-badge-new">New</span>
+                        <div class="spot-media"><span class="spot-media-ph">screenshot / demo</span><span
+                                class="spot-index">02</span></div>
+                        <div class="spot-body">
+                            <h3>Sri Lanka Fuel Price Intelligence Pipeline</h3>
+                            <p>End-to-end AWS data pipeline - ingests crude oil prices, FX rates, and retail fuel prices
+                                into a star-schema warehouse for BI analytics.</p>
+                            <div class="spot-tags"><span>AWS Glue</span><span>S3</span><span>Redshift</span></div>
+                            <a href="https://github.com/Amika1118/Sri-Lanka-fuel-price-intelligence-pipeline"
+                                target="_blank" rel="noopener noreferrer" class="p-link spot-link">View project <i
+                                    class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                    <article class="spotlight reveal" style="--rd:.12s">
+                        <span class="spot-badge spot-badge-new">New</span>
+                        <div class="spot-media"><span class="spot-media-ph">screenshot / demo</span><span
+                                class="spot-index">03</span></div>
+                        <div class="spot-body">
+                            <h3>MARGA Research Hub</h3>
+                            <p>Browse, search, and filter research papers from a Sri Lankan think tank and its partner
+                                organizations - built entirely client-side.</p>
+                            <div class="spot-tags"><span>JavaScript</span><span>HTML5</span><span>CSS3</span></div>
+                            <a href="https://github.com/Amika1118/marga_web_2" target="_blank" rel="noopener noreferrer"
+                                class="p-link spot-link">View project <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
 
+        <!-- ABOUT -->
+        <section id="about" class="panel">
+            <div class="container">
+                <div class="sec-head reveal">
+                    <div class="sec-label"><span class="num">01</span>// ABOUT</div>
+                    <h2 class="sec-title">Who I Am.</h2>
+                </div>
                 <div class="about-grid">
-                    <!-- Terminal card -->
-                    <div class="terminal" aria-label="Code snippet from churn prediction project">
-                        <div class="terminal-titlebar">
-                            <span class="terminal-dot"></span>
-                            <span class="terminal-dot"></span>
-                            <span class="terminal-dot"></span>
-                            <span class="terminal-filename">churn_model.py</span>
-                        </div>
-                        <div class="terminal-body">
-                            <span class="t-line"><span class="t-comment"># CM2604 - Telco Churn Prediction</span></span>
-                            <span class="t-line"><span class="t-keyword">from</span> <span
-                                    class="t-var">sklearn.ensemble</span> <span class="t-keyword">import</span> <span
-                                    class="t-var">RandomForestClassifier</span></span>
-                            <span class="t-line"><span class="t-keyword">from</span> <span
-                                    class="t-var">sklearn.model_selection</span> <span class="t-keyword">import</span>
-                                <span class="t-var">cross_val_score</span></span>
-                            <span class="t-line">&nbsp;</span>
-                            <span class="t-line"><span class="t-comment"># 7,043 records, class imbalance
-                                    handled</span></span>
-                            <span class="t-line"><span class="t-var">model</span> <span class="t-op">=</span> <span
-                                    class="t-function">RandomForestClassifier</span>(</span>
-                            <span class="t-line">&nbsp;&nbsp;<span class="t-var">n_estimators</span><span
-                                    class="t-op">=</span><span class="t-number">200</span>,</span>
-                            <span class="t-line">&nbsp;&nbsp;<span class="t-var">class_weight</span><span
-                                    class="t-op">=</span><span class="t-string">'balanced'</span>,</span>
-                            <span class="t-line">&nbsp;&nbsp;<span class="t-var">random_state</span><span
-                                    class="t-op">=</span><span class="t-number">42</span></span>
-                            <span class="t-line">)</span>
-                            <span class="t-line">&nbsp;</span>
-                            <span class="t-line"><span class="t-var">scores</span> <span class="t-op">=</span> <span
-                                    class="t-function">cross_val_score</span>(</span>
-                            <span class="t-line">&nbsp;&nbsp;<span class="t-var">model</span>, <span
-                                    class="t-var">X_train</span>, <span class="t-var">y_train</span>, <span
-                                    class="t-var">cv</span><span class="t-op">=</span><span
-                                    class="t-number">5</span></span>
-                            <span class="t-line">)</span>
-                            <span class="t-line">&nbsp;</span>
-                            <span class="t-line"><span class="t-function">print</span>(<span
-                                    class="t-var">scores</span>.<span class="t-function">mean</span>())</span>
-                            <span class="t-line"><span class="t-output">&gt; 0.8247</span></span>
-                        </div>
-                    </div>
-
-                    <!-- Text -->
-                    <div>
-                        <div class="about-text">
-                            <p>I build things end-to-end. ML pipelines that don't just train a model but handle data
-                                ingestion, preprocessing, feature engineering, and evaluation properly. Systems that
-                                solve a
-                                specific real problem — predicting customer churn, optimizing traffic flow in a city I
-                                actually live in, classifying EEG signals to give someone a voice. The math has to work,
-                                and
-                                the output has to be useful.</p>
-                            <p>The problems I find interesting are the ones that don't have clean textbook answers.
-                                Real-world data is messy, imbalanced, and seasonally structured. Optimization problems
-                                have
-                                conflicting objectives and constraints that don't fit neatly into a single metric. I
-                                like the
-                                part where you have to think carefully rather than just apply a method.</p>
-                            <p>I'm looking for internships, research collaborations, and project partnerships in ML,
-                                data
-                                engineering, or full-stack development. If you're building something interesting and
-                                need an
-                                extra pair of hands who will show up, think carefully, and ship things — reach out.</p>
-                        </div>
-
-                        <div class="currently-learning">
-                            <p class="learning-label">Currently learning</p>
-                            <div class="learning-tags">
-                                <span class="learning-tag">Apache Airflow</span>
-                                <span class="learning-tag">Docker</span>
-                                <span class="learning-tag">AWS</span>
+                    <div class="about-text reveal">
+                        <p>I build things end-to-end. ML pipelines that don't just train a model but handle data
+                            ingestion, preprocessing, feature engineering, and evaluation properly. Systems that solve a
+                            specific real problem - predicting customer churn, optimizing traffic flow in a city I
+                            actually live in, tracking Sri Lanka's fuel prices against global crude, classifying EEG
+                            signals to give someone a voice. The math has to work, and the output has to be useful.</p>
+                        <p>The problems I find interesting are the ones that don't have clean textbook answers.
+                            Real-world data is messy, imbalanced, and seasonally structured. Optimization problems have
+                            conflicting objectives and constraints that don't fit neatly into a single metric. I like
+                            the part where you have to think carefully rather than just apply a method.</p>
+                        <p>I'm looking for internships, research collaborations, and project partnerships in ML, data
+                            engineering, or full-stack development. If you're building something interesting and need an
+                            extra pair of hands who will show up, think carefully, and ship things - reach out.</p>
+                        <div class="terminal about-cta" aria-hidden="true" style="margin-top:2rem">
+                            <div class="term-bar"><span class="term-dot"></span><span class="term-dot"></span><span
+                                    class="term-dot"></span><span class="term-file">churn_model.py</span></div>
+                            <div class="term-body">
+                                <span class="t-c"># CM2604 - 7,043 records, class imbalance handled</span><br>
+                                <span class="t-v">model</span> <span class="t-o">=</span> <span
+                                    class="t-f">RandomForestClassifier</span>(<br>
+                                &nbsp;&nbsp;<span class="t-v">n_estimators</span><span class="t-o">=</span><span
+                                    class="t-n">200</span>,<br>
+                                &nbsp;&nbsp;<span class="t-v">class_weight</span><span class="t-o">=</span><span
+                                    class="t-s">'balanced'</span>,<br>
+                                &nbsp;&nbsp;<span class="t-v">random_state</span><span class="t-o">=</span><span
+                                    class="t-n">42</span><br>
+                                )<br>
+                                <span class="t-v">scores</span> <span class="t-o">=</span> <span
+                                    class="t-f">cross_val_score</span>(<span class="t-v">model</span>, <span
+                                    class="t-v">X_train</span>, <span class="t-v">y_train</span>, <span
+                                    class="t-v">cv</span><span class="t-o">=</span><span class="t-n">5</span>)<br>
+                                <span class="t-f">print</span>(<span class="t-v">scores</span>.<span
+                                    class="t-f">mean</span>())<br>
+                                <span class="t-c">&gt; 0.8247</span>
                             </div>
                         </div>
-
-                        <div class="status-badge">
-                            <span class="status-dot" aria-hidden="true"></span>
-                            <span class="status-text">Open to internships &amp; collaborations</span>
+                    </div>
+                    <div class="about-side reveal" style="--rd:.08s">
+                        <div class="avatar-block">
+                            <div class="avatar-ring"></div>
+                            <div class="avatar-mono" id="aboutAvatarFallback">AA</div>
+                            <img src="profile.jpg" alt="Amika Alankara" class="avatar-photo" id="aboutAvatarPhoto"
+                                onload="document.getElementById('aboutAvatarFallback').style.display='none'; this.style.display='block';"
+                                onerror="this.style.display='none';">
+                        </div>
+                        <div class="about-stats">
+                            <div class="ast">
+                                <div class="ast-num">2nd</div>
+                                <div class="ast-lbl">Year</div>
+                            </div>
+                            <div class="ast">
+                                <div class="ast-num">IIT</div>
+                                <div class="ast-lbl">Sri Lanka</div>
+                            </div>
+                            <div class="ast">
+                                <div class="ast-num">RGU</div>
+                                <div class="ast-lbl">UK Affiliate</div>
+                            </div>
+                        </div>
+                        <div class="avail-strip" style="margin-bottom:0;width:100%;justify-content:center">
+                            <span class="live-dot"></span>Open to internships &amp; collaborations
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ================================================
-         PROJECTS
-    ================================================ -->
-        <section id="projects" aria-label="Projects">
+        <!-- PROJECT ARCHIVE -->
+        <section id="projects" class="panel">
             <div class="container">
-                <div class="section-title-wrapper">
-                    <p class="section-label">What I've built</p>
-                    <h2 class="section-title" data-splitting>Projects</h2>
+                <div class="sec-head reveal">
+                    <div class="sec-label"><span class="num">02</span>// PROJECTS</div>
+                    <h2 class="sec-title">Full Archive.</h2>
+                    <p class="sec-sub">Everything else - filter by category.</p>
                 </div>
-
-                <!-- Filter bar -->
-                <div class="filter-bar" role="tablist" aria-label="Filter projects by category">
-                    <div class="filter-pill-bg" id="filter-pill" aria-hidden="true"></div>
+                <div class="filter-bar reveal" role="tablist">
                     <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
-                    <button class="filter-btn" data-filter="ml" role="tab" aria-selected="false">ML/Data</button>
+                    <button class="filter-btn" data-filter="ml" role="tab" aria-selected="false">ML / Data</button>
                     <button class="filter-btn" data-filter="web" role="tab" aria-selected="false">Web</button>
                     <button class="filter-btn" data-filter="software" role="tab" aria-selected="false">Software</button>
                     <button class="filter-btn" data-filter="research" role="tab" aria-selected="false">Research</button>
                 </div>
+                <div class="proj-grid" id="projGrid">
 
-                <!-- Cards grid -->
-                <div class="projects-grid" id="projects-grid">
-
-                    <!-- Project 1: Churn -->
-                    <article class="project-card" data-type="ml" data-category="ml">
-                        <div class="card-header">
-                            <span class="card-badge">ML/Data</span>
-                            <span class="card-context">CM2604 Coursework</span>
+                    <article class="p-card reveal" data-cat="ml">
+                        <div class="p-head"><span class="p-badge ml">ML / Data</span><span class="p-ctx">CM2604
+                                Coursework</span></div>
+                        <h3 class="p-title">Telco Customer Churn Prediction</h3>
+                        <p class="p-sum">Predicts which telecom customers will churn so businesses can intervene before
+                            losing them. End-to-end pipeline across 7,000+ records with three models compared.</p>
+                        <div class="p-stack">
+                            <span>Python</span><span>Pandas</span><span>Scikit-learn</span><span>Jupyter</span>
                         </div>
-                        <h3 class="card-title">Telco Customer Churn Prediction</h3>
-                        <p class="card-summary">Predicts which telecom customers will churn so businesses can intervene
-                            before losing them. End-to-end ML pipeline across 7,000+ records with three models compared.
-                        </p>
-                        <div class="card-stack">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">Pandas</span>
-                            <span class="skill-tag">Scikit-learn</span>
-                            <span class="skill-tag">Jupyter</span>
-                        </div>
-                        <p class="card-challenge"><strong>Key challenge:</strong> Extracting meaningful signal from a
-                            heavily
-                            class-imbalanced dataset without the model defaulting to always predicting the majority
-                            class.</p>
-                        <div class="card-footer">
-                            <a href="https://github.com/Amika1118/CM2604-Telco-Churn-Prediction" class="card-link"
-                                target="_blank" rel="noopener noreferrer"
-                                aria-label="View churn prediction code on GitHub">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-                                </svg>
-                                View Code
-                            </a>
-                        </div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/CM2604-Telco-Churn-Prediction"
+                                target="_blank" rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i>
+                                View Code</a></div>
                     </article>
 
-                    <!-- Project 2: Transport -->
-                    <article class="project-card" data-type="ml" data-category="ml">
-                        <div class="card-header">
-                            <span class="card-badge">ML/Data</span>
-                            <span class="card-context">CM2607 Coursework</span>
-                        </div>
-                        <h3 class="card-title">Colombo Transport Optimization</h3>
-                        <p class="card-summary">Models and optimizes real traffic flow across Colombo's road network to
+                    <article class="p-card reveal" data-cat="ml" style="--rd:.03s">
+                        <div class="p-head"><span class="p-badge ml">ML / Data</span><span class="p-ctx">CM2607
+                                Coursework</span></div>
+                        <h3 class="p-title">Colombo Transport Optimization</h3>
+                        <p class="p-sum">Models and optimizes real traffic flow across Colombo's road network to
                             identify bottlenecks and suggest routing improvements using linear programming.</p>
-                        <div class="card-stack">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">SciPy</span>
-                            <span class="skill-tag">NumPy</span>
-                            <span class="skill-tag">Jupyter</span>
+                        <div class="p-stack"><span>Python</span><span>SciPy</span><span>NumPy</span><span>Jupyter</span>
                         </div>
-                        <p class="card-challenge"><strong>Key challenge:</strong> Converting a real city's messy
-                            geographic
-                            data into a clean mathematical graph that optimization algorithms could actually process.
-                        </p>
-                        <div class="card-footer">
-                            <a href="https://github.com/Amika1118/CM2607_Advanced_Mathematics_Coursework"
-                                class="card-link" target="_blank" rel="noopener noreferrer"
-                                aria-label="View transport optimization code on GitHub">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-                                </svg>
-                                View Code
-                            </a>
+                        <div class="p-foot"><a
+                                href="https://github.com/Amika1118/CM2607_Adavaned_Mathematics_Coursework"
+                                target="_blank" rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i>
+                                View Code</a></div>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="ml" style="--rd:.06s">
+                        <div class="p-head"><span class="p-badge ml">ML / Data</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Weather Prediction Model</h3>
+                        <p class="p-sum">Predicts localized weather patterns - temperature, rainfall, humidity - to
+                            support agricultural planning and crop demand forecasting.</p>
+                        <div class="p-stack"><span>Python</span><span>Pandas</span><span>Scikit-learn</span></div>
+                        <div class="p-foot"><span class="p-norepo">No public repo</span></div>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="ml" style="--rd:.09s">
+                        <div class="p-head"><span class="p-badge ml">ML / Data</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Sri Lanka Fuel Price Intelligence Pipeline</h3>
+                        <p class="p-sum">An end-to-end AWS data pipeline ingesting global crude oil prices, USD/LKR
+                            exchange rates, and Sri Lankan retail fuel prices into a star-schema warehouse for BI
+                            dashboards.</p>
+                        <div class="p-stack"><span>Python</span><span>AWS S3</span><span>AWS
+                                Glue</span><span>Redshift</span></div>
+                        <div class="p-foot"><a
+                                href="https://github.com/Amika1118/Sri-Lanka-fuel-price-intelligence-pipeline"
+                                target="_blank" rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i>
+                                View Code</a></div>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="ml" style="--rd:.12s">
+                        <div class="p-head"><span class="p-badge ml">ML / Data</span><span class="p-ctx">DSGP Coursework
+                                - Team Project</span></div>
+                        <h3 class="p-title">Retail Price Prediction</h3>
+                        <p class="p-sum">Group data science project modelling and forecasting retail pricing trends as
+                            part of the second-year Data Science Group Project.</p>
+                        <div class="p-stack"><span>Python</span><span>Machine Learning</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/DSGP_Group_38" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
                     </article>
 
-                    <!-- Project 3: Weather -->
-                    <article class="project-card" data-type="ml" data-category="ml">
-                        <div class="card-header">
-                            <span class="card-badge">ML/Data</span>
-                            <span class="card-context">Personal Project</span>
-                        </div>
-                        <h3 class="card-title">Weather Prediction Model</h3>
-                        <p class="card-summary">Predicts localized weather patterns - temperature, rainfall, humidity —
-                            to
-                            support agricultural planning and crop demand forecasting, not just academic accuracy.</p>
-                        <div class="card-stack">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">Pandas</span>
-                            <span class="skill-tag">Scikit-learn</span>
-                            <span class="skill-tag">Jupyter</span>
-                        </div>
-                        <p class="card-challenge"><strong>Key challenge:</strong> Weather data is noisy and seasonally
-                            structured — preventing temporal data leakage from future records into the training set was
-                            the
-                            core technical problem.</p>
-                        <div class="card-footer">
-                            <span class="no-repo">No public repo</span>
+                    <article class="p-card reveal" data-cat="web" style="--rd:.03s">
+                        <div class="p-head"><span class="p-badge web">Web</span><span class="p-ctx">Client /
+                                Freelance</span></div>
+                        <h3 class="p-title">MARGA Research Hub</h3>
+                        <p class="p-sum">Browse, search, and filter research papers from Marga Institute and partner
+                            organizations - built entirely client-side over a structured paper archive.</p>
+                        <div class="p-stack"><span>JavaScript</span><span>HTML5</span><span>CSS3</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/marga_web_2" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
                     </article>
 
-                    <!-- Project 4: Media DB -->
-                    <article class="project-card" data-type="software" data-category="software">
-                        <div class="card-header">
-                            <span class="card-badge">Software</span>
-                            <span class="card-context">Personal Project</span>
-                        </div>
-                        <h3 class="card-title">Media Database Manager</h3>
-                        <p class="card-summary">CLI tool to organize personal collections of movies, TV series, and
-                            anime —
-                            search, filter, and analyze your library from the terminal with full CRUD and SQL joins.</p>
-                        <div class="card-stack">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">SQLite</span>
-                            <span class="skill-tag">CLI</span>
-                        </div>
-                        <p class="card-challenge"><strong>Key challenge:</strong> Designing a normalized schema that
-                            handled
-                            structural differences between movies, series, and anime without duplicating logic across
-                            tables.</p>
-                        <div class="card-footer">
-                            <a href="https://github.com/Amika1118/media-database-manager" class="card-link"
-                                target="_blank" rel="noopener noreferrer"
-                                aria-label="View media database manager code on GitHub">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-                                </svg>
-                                View Code
-                            </a>
+                    <article class="p-card reveal" data-cat="web" style="--rd:.06s">
+                        <div class="p-head"><span class="p-badge web">Web</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Audio Trimmer</h3>
+                        <p class="p-sum">A fully client-side web app for loading, previewing, trimming, and exporting
+                            audio - no upload, everything runs in the browser.</p>
+                        <div class="p-stack"><span>JavaScript</span><span>Web Audio API</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/audio-trimmer" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
                     </article>
 
-                    <!-- Project 5: Team Formation -->
-                    <article class="project-card" data-type="software" data-category="software">
-                        <div class="card-header">
-                            <span class="card-badge">Software</span>
-                            <span class="card-context">Personal Project</span>
+                    <article class="p-card reveal" data-cat="web" style="--rd:.09s">
+                        <div class="p-head"><span class="p-badge web">Web</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Lecture Notes Processor</h3>
+                        <p class="p-sum">Upload a lecture PDF and get an exam-focused summary and flashcards back in
+                            seconds - extracted fully in-browser, powered by Groq's Llama 3.3 70B.</p>
+                        <div class="p-stack"><span>JavaScript</span><span>PDF.js</span><span>Groq API</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/lecture-processor" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
-                        <h3 class="card-title">Team Formation System</h3>
-                        <p class="card-summary">Automatically forms balanced esports tournament teams by factoring in
-                            player
+                    </article>
+
+                    <article class="p-card reveal" data-cat="web" style="--rd:.12s">
+                        <div class="p-head"><span class="p-badge web">Web</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">MealMatch</h3>
+                        <p class="p-sum">A recommendation system that learns from Food.com ratings and personal likes to
+                            give tailored meal suggestions.</p>
+                        <div class="p-stack"><span>JavaScript</span><span>Recommender Systems</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/MealMatch" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
+                        </div>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="web" style="--rd:.15s">
+                        <div class="p-head"><span class="p-badge web">Web</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Bookify</h3>
+                        <p class="p-sum">A complete online bookstore - browse, search, filter, cart, and checkout -
+                            fully client-side in React with dynamic state management.</p>
+                        <div class="p-stack"><span>React</span><span>JavaScript</span><span>CSS3</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/Bookify" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
+                        </div>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="software" style="--rd:.03s">
+                        <div class="p-head"><span class="p-badge software">Software</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Media Database Manager</h3>
+                        <p class="p-sum">CLI tool to organize personal collections of movies, TV series, and anime -
+                            search, filter, and analyze your library with full CRUD and SQL joins.</p>
+                        <div class="p-stack"><span>Python</span><span>SQLite</span><span>CLI</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/media-database-manager"
+                                target="_blank" rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i>
+                                View Code</a></div>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="software" style="--rd:.06s">
+                        <div class="p-head"><span class="p-badge software">Software</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Team Formation System</h3>
+                        <p class="p-sum">Automatically forms balanced esports tournament teams by factoring in player
                             skill levels and personality assessments - not random assignment.</p>
-                        <div class="card-stack">
-                            <span class="skill-tag">Java</span>
-                            <span class="skill-tag">OOP</span>
-                        </div>
-                        <p class="card-challenge"><strong>Key challenge:</strong> Producing teams that felt fair to
-                            players —
-                            optimizing across multiple conflicting variables (skill, role, personality) rather than just
-                            a
-                            single metric.</p>
-                        <div class="card-footer">
-                            <a href="https://github.com/Amika1118/Team-Formation-System" class="card-link"
-                                target="_blank" rel="noopener noreferrer"
-                                aria-label="View team formation system code on GitHub">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-                                </svg>
-                                View Code
-                            </a>
+                        <div class="p-stack"><span>Java</span><span>OOP</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/Team-Formation-System" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
                     </article>
 
-                    <!-- Project 6: Bookify -->
-                    <article class="project-card" data-type="web" data-category="web">
-                        <div class="card-header">
-                            <span class="card-badge">Web</span>
-                            <span class="card-context">Personal Project</span>
-                        </div>
-                        <h3 class="card-title">Bookify</h3>
-                        <p class="card-summary">A complete online bookstore - browse, search, filter, cart, and checkout
-                            —
-                            fully client-side in React with dynamic state management and responsive layout.</p>
-                        <div class="card-stack">
-                            <span class="skill-tag">React</span>
-                            <span class="skill-tag">JavaScript</span>
-                            <span class="skill-tag">HTML5</span>
-                            <span class="skill-tag">CSS3</span>
-                        </div>
-                        <p class="card-challenge"><strong>Key challenge:</strong> Managing cart state cleanly across a
-                            growing
-                            component tree without prop-drilling turning into a maintenance nightmare.</p>
-                        <div class="card-footer">
-                            <a href="https://github.com/Amika1118/Bookify" class="card-link" target="_blank"
-                                rel="noopener noreferrer" aria-label="View Bookify code on GitHub">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-                                </svg>
-                                View Code
-                            </a>
+                    <article class="p-card reveal" data-cat="software" style="--rd:.09s">
+                        <div class="p-head"><span class="p-badge software">Software</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Card Game</h3>
+                        <p class="p-sum">A classic trick-taking card game that runs in the terminal - play against 3 AI
+                            opponents, choose trumps, and try to win the most tricks.</p>
+                        <div class="p-stack"><span>Python</span><span>OOP</span><span>Game AI</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/Card-Game" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
                     </article>
 
-                    <!-- Project 7: Brain-to-Text -->
-                    <article class="project-card" data-type="research" data-category="research">
-                        <div class="card-header">
-                            <span class="card-badge">Research</span>
-                            <span class="card-context">Research Initiative</span>
+                    <article class="p-card reveal" data-cat="software" style="--rd:.12s">
+                        <div class="p-head"><span class="p-badge software">Software</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">Sliding Puzzle</h3>
+                        <p class="p-sum">A classic 8-puzzle implementation with 80+ solvable configurations, 4
+                            difficulty levels, and multiple winning layouts - every puzzle guaranteed solvable.</p>
+                        <div class="p-stack"><span>Python</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/Sliding-Puzzle" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
-                        <h3 class="card-title">Brain-to-Text BCI Research</h3>
-                        <p class="card-summary">Technical proposal for a non-invasive BCI system that translates EEG
-                            signals
-                            into text — giving a voice to people who cannot speak. Architecture, methodology, and
-                            roadmap
-                            developed with faculty at University of Moratuwa and University of Kelaniya.</p>
-                        <div class="card-stack">
-                            <span class="skill-tag">EEG Analysis</span>
-                            <span class="skill-tag">Research</span>
-                            <span class="skill-tag">Signal Processing</span>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="software" style="--rd:.15s">
+                        <div class="p-head"><span class="p-badge software">Software</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">PDF Architect</h3>
+                        <p class="p-sum">Converts images to PDFs with batch mode, parallel conversion, and smart sorting
+                            - usable as a CLI tool or a Python API.</p>
+                        <div class="p-stack"><span>Python</span><span>CLI</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/pdf-architect" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
                         </div>
-                        <p class="card-challenge"><strong>Key challenge:</strong> Being honest in the proposal about the
-                            gap
-                            between what EEG signal processing can reliably deliver today and what a usable real-time
-                            text BCI
-                            system actually requires.</p>
-                        <div class="card-footer">
-                            <span class="no-repo">Research proposal - development paused during academics</span>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="software" style="--rd:.18s">
+                        <div class="p-head"><span class="p-badge software">Software</span><span class="p-ctx">Personal
+                                Project</span></div>
+                        <h3 class="p-title">World Bank Data Fetcher</h3>
+                        <p class="p-sum">A zero-config CLI tool that searches the World Bank Open Knowledge Repository
+                            by topic, country, and year - exports to XML, CSV, JSON, or PDF with a live progress UI.</p>
+                        <div class="p-stack"><span>Python</span><span>CLI</span><span>APIs</span></div>
+                        <div class="p-foot"><a href="https://github.com/Amika1118/wb-fetcher" target="_blank"
+                                rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>
+                        </div>
+                    </article>
+
+                    <article class="p-card reveal" data-cat="research" style="--rd:.03s">
+                        <div class="p-head"><span class="p-badge research">Research</span><span class="p-ctx">Research
+                                Initiative</span></div>
+                        <h3 class="p-title">Brain-to-Text BCI Research</h3>
+                        <p class="p-sum">Technical proposal for a non-invasive EEG-to-text BCI, developed with faculty
+                            at University of Moratuwa and University of Kelaniya.</p>
+                        <div class="p-stack"><span>EEG Analysis</span><span>Signal Processing</span></div>
+                        <div class="p-foot"><span class="p-norepo">Proposal - development paused during academics</span>
                         </div>
                     </article>
 
@@ -540,274 +530,265 @@
             </div>
         </section>
 
-        <!-- ================================================
-         SKILLS
-    ================================================ -->
-        <section id="skills" aria-label="Skills">
+        <!-- SKILLS -->
+        <section id="skills" class="panel">
             <div class="container">
-                <div class="section-title-wrapper">
-                    <p class="section-label">What I work with</p>
-                    <h2 class="section-title" data-splitting>Skills</h2>
+                <div class="sec-head reveal">
+                    <div class="sec-label"><span class="num">03</span>// SKILLS</div>
+                    <h2 class="sec-title">What I Use.</h2>
                 </div>
-
-                <div class="skills-groups">
-                    <div class="skill-group">
-                        <h3 class="skill-group-title">Machine Learning &amp; Data Analysis</h3>
-                        <p class="skill-group-desc">Used to build predictive models, optimize real-world systems, and
-                            extract
-                            patterns from messy datasets.</p>
-                        <div class="skill-tags-list">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">Pandas</span>
-                            <span class="skill-tag">NumPy</span>
-                            <span class="skill-tag">SciPy</span>
-                            <span class="skill-tag">Scikit-learn</span>
-                            <span class="skill-tag">Matplotlib</span>
-                            <span class="skill-tag">Seaborn</span>
-                            <span class="skill-tag">Jupyter</span>
-                            <span class="skill-tag">RStudio</span>
+                <div class="skills-grid">
+                    <div class="reveal">
+                        <div class="sk-group-label">Core languages</div>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>Python</span><span class="pct">85%</span></div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="85"></div>
+                            </div>
+                        </div>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>JavaScript</span><span class="pct">75%</span></div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="75"></div>
+                            </div>
+                        </div>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>Java</span><span class="pct">70%</span></div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="70"></div>
+                            </div>
+                        </div>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>SQL</span><span class="pct">68%</span></div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="68"></div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="skill-group">
-                        <h3 class="skill-group-title">Software &amp; Web Development</h3>
-                        <p class="skill-group-desc">Used to build full-stack web apps, CLI tools, database-backed
-                            systems,
-                            and a React e-commerce frontend.</p>
-                        <div class="skill-tags-list">
-                            <span class="skill-tag">Java</span>
-                            <span class="skill-tag">JavaScript</span>
-                            <span class="skill-tag">React</span>
-                            <span class="skill-tag">HTML5</span>
-                            <span class="skill-tag">CSS3</span>
-                            <span class="skill-tag">SQL</span>
-                            <span class="skill-tag">SQLite</span>
-                            <span class="skill-tag">Git</span>
-                            <span class="skill-tag">CLI</span>
-                            <span class="skill-tag">XAMPP</span>
+                    <div class="reveal" style="--rd:.08s">
+                        <div class="sk-group-label">Applied</div>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>Machine Learning</span><span class="pct">80%</span></div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="80"></div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="skill-group skill-group-learning">
-                        <h3 class="skill-group-title">Currently Building With</h3>
-                        <p class="skill-group-desc">Actively learning to build production-grade data pipelines and
-                            cloud-deployed systems.</p>
-                        <div class="skill-tags-list">
-                            <span class="skill-tag">Apache Airflow</span>
-                            <span class="skill-tag">Docker</span>
-                            <span class="skill-tag">AWS S3</span>
-                            <span class="skill-tag">AWS Lambda</span>
-                            <span class="skill-tag">AWS Glue</span>
-                            <span class="skill-tag">AWS Athena</span>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>Full-Stack (React/Node)</span><span class="pct">72%</span></div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="72"></div>
+                            </div>
+                        </div>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>Data Engineering</span><span class="pct">72%</span></div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="72"></div>
+                            </div>
+                        </div>
+                        <div class="skb-row">
+                            <div class="skb-info"><span>AWS (S3 / Glue / Redshift)</span><span class="pct">58%</span>
+                            </div>
+                            <div class="skb-track">
+                                <div class="skb-fill" data-w="58"></div>
+                            </div>
+                        </div>
+                        <div class="sk-group-label" style="margin-top:1.6rem">Currently learning</div>
+                        <div class="learning-tags"><span>Apache Airflow</span><span>Docker</span><span>MLOps</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ================================================
-         EDUCATION
-    ================================================ -->
-        <section id="education" aria-label="Education">
+        <!-- EDUCATION -->
+        <section id="education" class="panel">
             <div class="container">
-                <div class="section-title-wrapper">
-                    <p class="section-label">Background</p>
-                    <h2 class="section-title" data-splitting>Education</h2>
+                <div class="sec-head reveal">
+                    <div class="sec-label"><span class="num">04</span>// EDUCATION</div>
+                    <h2 class="sec-title">Background.</h2>
                 </div>
-
-                <div class="timeline">
-                    <div class="timeline-line" aria-hidden="true">
-                        <div class="timeline-line-fill"></div>
+                <div class="edu-main reveal">
+                    <div>
+                        <div class="edu-year">2024-2028</div>
+                        <div class="edu-status"><span class="live-dot"></span>Currently enrolled</div>
                     </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-dot" aria-hidden="true"></div>
-                        <div class="timeline-date">2024 - Present</div>
-                        <div class="timeline-title">BSc (Hons) Artificial Intelligence &amp; Data Science</div>
-                        <div class="timeline-subtitle">Informatics Institute of Technology (IIT), Colombo</div>
-                        <div class="timeline-detail">Affiliated with Robert Gordon University, UK</div>
-                        <div class="grade-chips">
-                            <span class="grade-chip">Database Systems - A</span>
-                            <span class="grade-chip">Web Technology - A</span>
-                            <span class="grade-chip">Programming Fundamentals - B</span>
-                            <span class="grade-chip">Computational Mathematics - B</span>
+                    <div>
+                        <div class="edu-degree-sm">BSc (Hons)</div>
+                        <div class="edu-degree-big">Artificial Intelligence &amp; Data Science</div>
+                        <div class="edu-inst">Informatics Institute of Technology</div>
+                        <div class="edu-affil"><i class="fas fa-link"></i>Affiliated with Robert Gordon University, UK
+                        </div>
+                        <div class="spot-tags" style="margin-top:1rem">
+                            <span>Database Systems - A</span><span>Web Technology - A</span><span>Programming
+                                Fundamentals - B</span><span>Computational Mathematics - B</span>
                         </div>
                     </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-dot" aria-hidden="true"></div>
-                        <div class="timeline-date">2023 - 2024</div>
-                        <div class="timeline-title">English Diploma</div>
-                        <div class="timeline-subtitle">Sabaragamuwa University of Sri Lanka</div>
-                        <div class="timeline-detail">Language qualification completed alongside undergraduate
-                            preparation.</div>
+                    <div>
+                        <div class="edu-prog-label">Degree progress</div>
+                        <div class="edu-prog-bar">
+                            <div class="edu-prog-fill" data-w="50"></div>
+                        </div>
+                        <div class="edu-ticks"><span>Y1</span><span
+                                class="active">Y2</span><span>Y3</span><span>Y4</span></div>
                     </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-dot" aria-hidden="true"></div>
-                        <div class="timeline-date">2010 - 2023</div>
-                        <div class="timeline-title">Prince College Ratnapura</div>
-                        <div class="timeline-subtitle">Secondary Education</div>
+                </div>
+                <div class="edu-mods reveal" style="--rd:.05s">
+                    <div class="edu-mod-label">KEY MODULES</div>
+                    <div class="edu-mod-grid">
+                        <div class="edu-mod-item"><span class="emd"></span>Machine Learning &amp; AI</div>
+                        <div class="edu-mod-item"><span class="emd" style="background:var(--gold)"></span>Statistical
+                            Methods</div>
+                        <div class="edu-mod-item"><span class="emd" style="background:var(--b-web)"></span>Database
+                            Systems</div>
+                        <div class="edu-mod-item"><span class="emd"></span>Data Structures &amp; Algorithms</div>
+                        <div class="edu-mod-item"><span class="emd" style="background:var(--gold)"></span>Web
+                            Technologies</div>
+                        <div class="edu-mod-item"><span class="emd" style="background:var(--b-web)"></span>Advanced
+                            Mathematics</div>
+                    </div>
+                </div>
+                <div class="edu-mods reveal" style="--rd:.08s;margin-top:1.4rem">
+                    <div class="edu-mod-label">PRIOR EDUCATION</div>
+                    <div class="edu-mod-grid">
+                        <div class="edu-mod-item"><span class="emd" style="background:var(--b-research)"></span>English
+                            Diploma - Sabaragamuwa University of Sri Lanka (2023–2024)</div>
+                        <div class="edu-mod-item"><span class="emd" style="background:var(--b-soft)"></span>Secondary
+                            Education - Prince College Ratnapura (2010–2023)</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ================================================
-         CONTACT
-    ================================================ -->
-        <section id="contact" aria-label="Contact">
-            <div class="container">
-                <div class="contact-inner">
-                    <h2 class="contact-headline">Let's Build Something.</h2>
-                    <p class="contact-sub">I'm looking for internships and collaborations in ML, data engineering, and
-                        full-stack development. If you're working on something interesting and need an extra pair of
-                        hands —
-                        reach out.</p>
-
-                    <div class="contact-email-block">
-                        <span class="contact-email">amika.20240191@iit.ac.lk</span>
-                        <button class="copy-email" aria-label="Copy email address to clipboard">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                            Copy
-                        </button>
+        <!-- CONTACT -->
+        <section id="contact" class="panel">
+            <div class="container contact-inner">
+                <div class="contact-top reveal">
+                    <div class="sec-label"><span class="num">05</span>// CONTACT</div>
+                    <h2 class="sec-title">Let's Connect.</h2>
+                    <p class="sec-sub">Open to internships, research collaborations and project work. Based in Colombo,
+                        Sri Lanka.</p>
+                    <div class="contact-links" style="margin-top:2rem">
+                        <a href="mailto:amika.20240191@iit.ac.lk" class="cl-row" id="emailRow">
+                            <div class="cl-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <div class="cl-label">Email - click to copy</div>
+                                <div class="cl-val" id="emailVal">amika.20240191@iit.ac.lk</div>
+                            </div>
+                            <div class="cl-arr"><i class="fas fa-arrow-right"></i></div>
+                        </a>
+                        <a href="https://www.linkedin.com/in/amika-ranmeth/" target="_blank" rel="noopener"
+                            class="cl-row">
+                            <div class="cl-icon"><i class="fab fa-linkedin"></i></div>
+                            <div>
+                                <div class="cl-label">LinkedIn</div>
+                                <div class="cl-val">amika-ranmeth</div>
+                            </div>
+                            <div class="cl-arr"><i class="fas fa-arrow-right"></i></div>
+                        </a>
+                        <a href="https://github.com/Amika1118" target="_blank" rel="noopener" class="cl-row">
+                            <div class="cl-icon"><i class="fab fa-github"></i></div>
+                            <div>
+                                <div class="cl-label">GitHub</div>
+                                <div class="cl-val">Amika1118</div>
+                            </div>
+                            <div class="cl-arr"><i class="fas fa-arrow-right"></i></div>
+                        </a>
+                        <a href="https://www.upwork.com/freelancers/~01e0bb28542b1cc5ad" target="_blank" rel="noopener"
+                            class="cl-row">
+                            <div class="cl-icon"><i class="fas fa-briefcase"></i></div>
+                            <div>
+                                <div class="cl-label">Upwork</div>
+                                <div class="cl-val">Freelance work</div>
+                            </div>
+                            <div class="cl-arr"><i class="fas fa-arrow-right"></i></div>
+                        </a>
                     </div>
-
                     <div class="contact-socials">
-                        <a href="https://github.com/Amika1118" class="social-btn" target="_blank"
-                            rel="noopener noreferrer" aria-label="GitHub profile">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+                        <a href="https://x.com/amika_alankara/" target="_blank" rel="noopener" class="icon-btn"
+                            aria-label="X profile">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path fill="currentColor"
+                                    d="M18.9 2h3.5l-7.6 8.7L22 22h-6.9l-5.4-7.9L4 22H.5l8.1-9.2L2 2h7.1l4.9 7.3L18.9 2Zm-1.2 18.1h1.9L7.1 3.8H5.1l12.6 16.3Z" />
                             </svg>
                         </a>
-                        <a href="https://www.linkedin.com/in/amika-ranmeth/" class="social-btn" target="_blank"
-                            rel="noopener noreferrer" aria-label="LinkedIn profile">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                            </svg>
-                        </a>
-                        <a href="mailto:amika.20240191@iit.ac.lk" class="social-btn" aria-label="Send email">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                            </svg>
-                        </a>
+                        <a href="https://discord.com/users/1120633957491421286" target="_blank" rel="noopener"
+                            class="icon-btn" aria-label="Discord profile"><i class="fab fa-discord"></i></a>
+                        <a href="https://www.reddit.com/user/amika_alankara_2004/" target="_blank" rel="noopener"
+                            class="icon-btn" aria-label="Reddit profile"><i class="fab fa-reddit"></i></a>
+                        <a href="https://www.instagram.com/amika.alankara/" target="_blank" rel="noopener"
+                            class="icon-btn" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/94701097800" target="_blank" rel="noopener" class="icon-btn"
+                            aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     </div>
-
-                    <!-- Contact form -->
-                    <form class="contact-form" id="contact-form" novalidate>
-                        <div class="form-group">
-                            <label class="form-label" for="form-name">Name</label>
-                            <input class="form-input" type="text" id="form-name" name="name" placeholder="Your name"
-                                autocomplete="name">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="form-email">Email</label>
-                            <input class="form-input" type="email" id="form-email" name="email"
-                                placeholder="your@email.com" autocomplete="email">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="form-subject">Purpose</label>
-                            <select id="form-subject" name="subject" class="form-input" required>
-                                <option value="" disabled selected>Choose a purpose</option>
-                                <option value="Internship">Internship / Opportunity</option>
-                                <option value="Collaboration">Collaboration / Partnership</option>
-                                <option value="Project Inquiry">Project Inquiry</option>
-                                <option value="Research">Research Opportunity</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="form-message">Message</label>
-                            <textarea class="form-textarea" id="form-message" name="message"
-                                placeholder="What are you building?"></textarea>
-                        </div>
-                        <button type="submit" class="form-submit">
-                            <span class="form-submit-text">Send Message</span>
-                            <span class="form-submit-spinner" aria-hidden="true"></span>
-                        </button>
-                    </form>
+                    <div class="avail-strip"><span class="live-dot"></span>Available for internships &amp;
+                        collaborations</div>
                 </div>
+
+                <form class="contact-form reveal" id="contactForm" style="--rd:.06s" novalidate>
+                    <div class="form-row">
+                        <div class="form-group"><label for="fName">Name</label><input id="fName" type="text"
+                                placeholder="Your name" autocomplete="name"></div>
+                        <div class="form-group"><label for="fEmail">Email</label><input id="fEmail" type="email"
+                                placeholder="your@email.com" autocomplete="email"></div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:1rem">
+                        <label for="fPurpose">Purpose</label>
+                        <select id="fPurpose">
+                            <option value="" selected disabled>Choose a purpose</option>
+                            <option>Internship / Opportunity</option>
+                            <option>Collaboration / Partnership</option>
+                            <option>Project Inquiry</option>
+                            <option>Research Opportunity</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:1.3rem">
+                        <label for="fMsg">Message</label>
+                        <textarea id="fMsg" placeholder="What are you building?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-fill form-submit">
+                        <span class="form-submit-text">Send Message</span>
+                    </button>
+                </form>
             </div>
         </section>
 
     </main>
 
-    <div id="toast" aria-live="polite" role="status"></div>
-
-    <div class="chat-bubble" id="chat-bubble" role="button" aria-label="Open chat with Amika's assistant"
-        aria-expanded="false" tabindex="0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <rect x="5" y="7" width="14" height="10" rx="3"></rect>
-            <path d="M9 9.5h.01" />
-            <path d="M15 9.5h.01" />
-            <path d="M8.5 14.5h7" />
-            <path d="M7 7V5a1 1 0 0 1 1-1h1" />
-            <path d="M17 7V5a1 1 0 0 0-1-1h-1" />
-            <rect x="7" y="3" width="3" height="2" rx="1" />
-            <rect x="14" y="3" width="3" height="2" rx="1" />
-            <path d="M7 18h10" opacity="0.4" />
-        </svg>
-    </div>
-    <div class="chat-panel" id="chat-panel" aria-hidden="true">
-        <div class="chat-panel-inner">
-            <div class="chat-panel-header">
-                <div>
-                    <p class="chat-panel-title">Ask Amika's Assistant</p>
-                    <p class="chat-panel-subtitle">Local assistant - answers using content on this site.</p>
-                </div>
-                <button class="chat-close" id="chat-close" aria-label="Close chat">×</button>
-            </div>
-            <div class="chat-messages" id="chat-messages" aria-live="polite" aria-label="Chat conversation"></div>
-            <div class="chat-typing" id="chat-typing" aria-hidden="true">
-                <span></span><span></span><span></span>
-            </div>
-            <form class="chat-input-area" id="chat-form">
-                <input type="text" id="chat-input" class="chat-input" placeholder="Ask about my work or contact me..."
-                    autocomplete="off" />
-                <button type="submit" class="chat-send" aria-label="Send message">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container footer-inner">
-            <span class="footer-name">Amika Alankara</span>
-            <nav class="footer-links" aria-label="Footer navigation">
-                <a href="#about" class="footer-link">About</a>
-                <a href="#projects" class="footer-link">Projects</a>
-                <a href="#contact" class="footer-link">Contact</a>
-            </nav>
-            <p class="footer-credit">Built with care in <span>Colombo</span> &copy; <span id="year"></span></p>
-        </div>
+    <footer class="site-footer">
+        <span class="sf-name">Amika Alankara</span>
+        <span>BSc (Hons) AI &amp; Data Science · IIT Sri Lanka</span>
+        <span>Built in Colombo © <span id="yr"></span></span>
     </footer>
 
-    <!-- Back to top -->
-    <button id="back-to-top" aria-label="Back to top">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="m18 15-6-6-6 6" />
-        </svg>
-    </button>
+    <button class="to-top" id="toTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
 
-    <!-- Custom JavaScript -->
+    <button class="chat-bubble" id="chatBubble" aria-label="Open assistant" aria-expanded="false"><i
+            class="fas fa-comment-dots"></i></button>
+    <div class="chat-panel" id="chatPanel" aria-hidden="true">
+        <div class="chat-head">
+            <div>
+                <h4>Ask Amika's Assistant</h4>
+                <p>Local assistant - answers using content on this site.</p>
+            </div>
+            <button class="chat-close" id="chatClose" aria-label="Close chat">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages" aria-live="polite" aria-label="Chat conversation"></div>
+        <div class="chat-typing" id="chatTyping" aria-hidden="true">
+            <span class="chat-typing-label">typing</span>
+            <span class="chat-typing-dots"><span></span><span></span><span></span></span>
+        </div>
+        <form class="chat-input-row" id="chatForm">
+            <textarea id="chatInput" rows="1" enterkeyhint="send" placeholder="Ask about my work or contact me…"
+                autocomplete="off"></textarea>
+            <button type="submit" class="chat-send" aria-label="Send message"><i
+                    class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
     <script src="script.js"></script>
-
 </body>
 
 </html>
