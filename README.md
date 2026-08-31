@@ -2,7 +2,7 @@
 
 This repository contains the source code for my professional portfolio and CV website. The site is intended to serve as an interactive resume for potential employers, collaborators, and academic peers.
 
-🔗 **Live Site:** [[Live On]](https://amika-alankara-portfolio.vercel.app/)
+🔗 **Live Site:** [[Link]](https://amika-alankara-portfolio.vercel.app/)
 -----
 
 ## **Purpose**
