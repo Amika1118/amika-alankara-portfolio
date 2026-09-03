@@ -135,6 +135,71 @@ select {
     }
 }
 
+/* ====================================================
+   CIRCULAR REVEAL - shared by the theme AND motion toggles
+   Driven by script.js's runCircularReveal() (swapTheme() /
+   swapMotion()) via the View Transitions API. --theme-x/
+   --theme-y/--theme-radius are set from the clicked button's
+   own position right before the transition starts.
+==================================================== */
+html.vt-swapping * {
+    /* Every element's own little color/border transitions get switched
+       off for the swap so the "after" snapshot the browser captures is
+       the fully-settled new theme, not a half-finished local fade
+       racing the reveal underneath it. */
+    transition: none !important;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 2;
+    /* NOT var(--ease) here on purpose - that curve is tuned for quick
+       150-300ms hover/button micro-interactions (fast start, long soft
+       tail). Stretched over a much longer, much larger full-screen reveal,
+       that same curve reaches ~97% of the circle's final radius by 60% of
+       the duration, leaving almost no visible motion for the last third of
+       the animation - which reads as the reveal stalling/stopping early
+       rather than smoothly finishing. This is Material Design's standard
+       "decelerate" curve instead, which spreads visible motion much more
+       evenly across the full duration. */
+    animation: theme-reveal 2s ease-in-out;
+}
+
+/* Keeps the container's own (normally 0.25s) default sizing animation from
+   settling well before our .75s reveal finishes - see runCircularReveal()
+   in script.js. Harmless no-op when old/new snapshots are the same size
+   (the usual case for a color-only theme swap), but matters if anything
+   nudges the page's rendered size between snapshots (e.g. the motion
+   toggle's icon glyph changing between play/pause). */
+::view-transition-group(root) {
+    animation-duration: 2s;
+}
+
+@keyframes theme-reveal {
+    from {
+        clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 50%));
+    }
+
+    to {
+        clip-path: circle(var(--theme-radius, 150%) at var(--theme-x, 50%) var(--theme-y, 50%));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-new(root) {
+        animation: none;
+    }
+}
+
 /* section label / heading system (numbered - page is a real sequential scroll) */
 .sec-head {
     padding: 5rem 0 2.5rem
@@ -2595,16 +2660,16 @@ html[data-theme="light"] #welcomeOverlay {
 
 /* Motion toggle - pauses only the ambient/decorative loops above, not
    transient UI feedback (chat typing dots, toasts, drawer, etc.), so
-   pausing "animations" never freezes something mid-interaction. */
+   pausing "animations" never freezes something mid-interaction. The
+   preloader is deliberately excluded too - it can already be mid-spin
+   the instant the page loads (a saved "paused" preference from a prior
+   visit applies before the user ever sees the page), and a frozen
+   loading indicator reads as broken rather than intentional. */
 html[data-motion="paused"] .hero-orb-1,
 html[data-motion="paused"] .hero-orb-2,
 html[data-motion="paused"] .hero-grid-lines,
 html[data-motion="paused"] .live-dot::before,
 html[data-motion="paused"] .spot-media::after,
-html[data-motion="paused"] .preloader-ring,
-html[data-motion="paused"] .preloader-ring::before,
-html[data-motion="paused"] .preloader-glow,
-html[data-motion="paused"] .preloader-mark,
 html[data-motion="paused"] .nav-logo .dot,
 html[data-motion="paused"] .btn-fill::after,
 html[data-motion="paused"] .scroll-ind .ln,

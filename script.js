@@ -52,6 +52,57 @@
         try { localStorage.setItem('aa_theme', theme); } catch (e) { /* storage unavailable */ }
     }
 
+    // Drives a state swap (theme, motion, ...) through the View Transitions
+    // API so the change reveals as a circle expanding out from whatever
+    // button triggered it, instead of the whole page just snapping (or
+    // crossfading in place). Every element's own little color/border
+    // transitions are switched off for the duration (see .vt-swapping in
+    // style.css) so the "after" snapshot the browser captures is the
+    // fully-settled new state, not a half-finished local fade - otherwise
+    // the reveal would show a page that's still visibly catching up to
+    // itself. Shared by the theme toggle and the motion toggle so both get
+    // the exact same circular-reveal treatment.
+    let activeViewTransition = null;
+
+function runCircularReveal(applyChange, originEl) {
+    if (prefersReduced || typeof document.startViewTransition !== 'function') {
+        applyChange();
+        return;
+    }
+
+    const rect = originEl.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    // Use document dimensions, not viewport
+    const docWidth = Math.max(document.documentElement.scrollWidth, window.innerWidth);
+    const docHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+
+    const radius = Math.hypot(
+        Math.max(x, docWidth - x),
+        Math.max(y, docHeight - y)
+    );
+
+    const root = document.documentElement;
+    root.style.setProperty('--theme-x', x + 'px');
+    root.style.setProperty('--theme-y', y + 'px');
+    root.style.setProperty('--theme-radius', radius + 'px');
+
+    if (activeViewTransition) activeViewTransition.skipTransition();
+
+    root.classList.add('vt-swapping');
+    const transition = document.startViewTransition(applyChange);
+    activeViewTransition = transition;
+    transition.finished.catch(() => {}).finally(() => {
+        root.classList.remove('vt-swapping');
+        if (activeViewTransition === transition) activeViewTransition = null;
+    });
+}
+
+    function swapTheme(next, originEl) {
+        runCircularReveal(() => applyTheme(next), originEl);
+    }
+
     function initTheme() {
         let theme = 'dark';
         try {
@@ -65,7 +116,7 @@
         if (toggle) {
             toggle.addEventListener('click', () => {
                 const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-                applyTheme(next);
+                swapTheme(next, toggle);
                 showToast(next === 'dark' ? 'Welcome to the dark side 😈 Lucifer approves.' : 'Back to the light 😇 The angels are pleased.');
             });
         }
@@ -86,6 +137,37 @@
         try { localStorage.setItem('aa_motion', state); } catch (e) { /* ignore */ }
     }
 
+    // Same circular-reveal treatment as the theme toggle (see
+    // runCircularReveal above) - pausing/resuming animations gets the same
+    // "wipe" the page does when switching between dark and light.
+    function swapMotion(next, originEl) {
+        runCircularReveal(() => setMotion(next), originEl);
+    }
+
+    // Comedic "system readout" shown whenever animations start/stop, whether
+    // that's from the nav toggle or a chat command. Reuses the SAME toast
+    // popup the theme toggle uses (showToast) so pause/resume feedback looks
+    // and behaves exactly like the dark/light mode switch - just with its
+    // own rotating set of lines. The toast's colors already come from
+    // --text/--bg, which flip with the theme, so this stays mode-aware for
+    // free without any extra color logic.
+    const MOTION_POPUP_LINES = {
+        paused: [
+            '⏸️ system.halt() - animations paused. CPU says thanks.',
+            '🧊 motion.freeze() - orbs frozen mid-orbit.',
+            '💤 process.sleep() - everything decorative just clocked out.'
+        ],
+        running: [
+            '▶️ system.resume() - orbs back on the clock.',
+            '⚡ motion.restart() - re-animating, try not to blink.',
+            '🔁 loop.restore() - ambient motion restored.'
+        ]
+    };
+
+    function showMotionPopup(state) {
+        showToast(pickLine(MOTION_POPUP_LINES[state] || MOTION_POPUP_LINES.running));
+    }
+
     function initMotion() {
         let state = prefersReduced ? 'paused' : 'running';
         try {
@@ -98,24 +180,27 @@
         if (btn) {
             btn.addEventListener('click', () => {
                 const next = document.documentElement.getAttribute('data-motion') === 'paused' ? 'running' : 'paused';
-                setMotion(next);
+                swapMotion(next, btn);
+                showMotionPopup(next);
             });
         }
     }
 
     // ========================
-    // HIDDEN BROWSER GAME - points the user to their browser's built-in
-    // easter-egg game (offline address-bar link) plus an online alternative
-    // where one exists. Browsers block scripts from navigating to their own
-    // internal chrome://, edge://, opera://, vivaldi:// pages, so the offline
-    // link is handed back as text to paste in rather than auto-opened.
+    // HIDDEN BROWSER GAME - points the user straight to the online version
+    // of their browser's built-in easter-egg game. Older builds of this also
+    // copied the offline chrome://dino-style address-bar link to the
+    // clipboard, but that added a confusing extra step (and a permissions
+    // prompt on some browsers) for something that just needs one tab to
+    // open. Now it only ever opens a link directly - no clipboard writes.
     // ========================
     const BROWSER_GAMES = {
-        chrome: { label: 'Chrome', name: 'Rex Runner', offline: 'chrome://dino', online: 'https://elgoog.im/dinosaur-game/' },
-        edge: { label: 'Edge', name: 'Edge Surf', offline: 'edge://surf', online: null },
-        opera: { label: 'Opera GX', name: 'Operius', offline: 'opera://operius', online: 'https://gx.games/games/8z54je/operius/' },
-        vivaldi: { label: 'Vivaldi', name: 'Vivaldia', offline: 'vivaldi://game', online: 'https://vivaldi.com/games/vivaldia2/' }
+        chrome: { label: 'Chrome', name: 'Rex Runner', online: 'https://elgoog.im/dinosaur-game/' },
+        edge: { label: 'Edge', name: 'Edge Surf', online: null },
+        opera: { label: 'Opera GX', name: 'Operius', online: 'https://gx.games/games/8z54je/operius/' },
+        vivaldi: { label: 'Vivaldi', name: 'Vivaldia', online: 'https://vivaldi.com/games/vivaldia2/' }
     };
+
 
     // Order matters: Vivaldi, Edge, and Opera all carry "Chrome" in their UA
     // string for site-compatibility reasons, so the more specific tokens
@@ -514,7 +599,9 @@
         // Only the send button locks - the textarea itself stays enabled and
         // focused. Disabling it would blur the field and drop the on-screen
         // keyboard on every single reply, which feels broken while texting.
-        if (send) send.disabled = visible;
+        // Also stays locked while chatbot-rules.json is still loading, so a
+        // fast typist can't submit before the rules are ready.
+        if (send) send.disabled = visible || chatRulesLoading;
         chatBusy = visible;
         if (visible) {
             const box = document.getElementById('chatMessages');
@@ -822,6 +909,33 @@
         return /\bcopy\b.*\bemail\b/.test(t);
     }
 
+    // Copies the current page URL - distinct from detectCopyEmailIntent above,
+    // and checked after it in resolveSingleQuery so "copy email" still wins
+    // if a message somehow matched both.
+    function detectCopyLinkIntent(t) {
+        return /\bcopy\b/.test(t) && /\b(link|url|page|site|portfolio)\b/.test(t) && !/\bemail\b/.test(t);
+    }
+
+    // "list all projects" / "show every project" etc. - an overview action,
+    // distinct from asking about the Projects *section* (which the existing
+    // "projects" canned reply already covers) or filtering by category.
+    function detectListProjectsIntent(t) {
+        return /\b(list|show me|show|give me)\b.*\b(all|every)\b.*\bprojects?\b/.test(t)
+            || /\ball projects\b/.test(t)
+            || /\bevery project\b/.test(t)
+            || /\bfull project list\b/.test(t);
+    }
+
+    // "projects using python" / "which projects use react" / "projects built
+    // with aws" - pulls the tech keyword out and matches it against each
+    // project card's tag chips (.p-stack span) rather than the fixed ml/web/
+    // software/research buckets detectFilterIntent works with.
+    function detectTechSearchIntent(t) {
+        const m = t.match(/\bprojects?\b[^.?!]*\b(?:using|with|built (?:with|using|in)|written in|made (?:with|in))\s+([a-z0-9+.#]+)/)
+            || t.match(/\bwhich projects?\s+use\s+([a-z0-9+.#]+)/);
+        return m ? m[1] : null;
+    }
+
     // Reads live numbers straight off the hero stat counters so answers never
     // drift out of sync with what's actually shown on the page.
     function detectStatsIntent(t) {
@@ -853,74 +967,60 @@
         return /\b(open|show me the code|code for|view code|github for|link for|source for)\b/.test(t);
     }
 
-    const SECTION_SUMMARIES = {
-        about: "I'm Amika Alankara, an AI & Data Science student at IIT Colombo.\nThis site covers my projects, skills, and experience.",
-        featured: 'The newest builds:\n• Sri Lanka Fuel Price Intelligence Pipeline (AWS data pipeline)\n• MARGA Research Hub\n\nBoth are in the Featured section.',
-        projects: 'GitHub: github.com/Amika1118\nEverything from ML pipelines to CLI tools is there.\n\nFull project list and links are below.',
-        skills: 'Core skills:\n• Python, Java, JavaScript, SQL\n• Applied ML\n• Full-stack (React/Node)\n• Data engineering & AWS\n\nSee the Skills section for the full breakdown.',
-        education: 'BSc (Hons) AI & Data Science at IIT Colombo, affiliated with Robert Gordon University, UK.\nCheck the Education section for modules and grades.',
-        contact: "A few ways to reach out:\n• Use the contact form below\n• Email amika.20240191@iit.ac.lk\n• Just tell me you want to get in touch and I'll fill the form for you"
-    };
+    // ---------- rule data loading ----------
+    // SECTION_SUMMARIES, cannedReplies, sectionMap, statsPhrasing, and
+    // alreadyActiveLines all used to be hardcoded here. They now live in
+    // chatbot-rules.json (fetched below) so they can be hand-edited without
+    // touching this file. `chatRules` holds the parsed/rebuilt data once the
+    // fetch resolves; every place that used to read the old constants now
+    // reads from `chatRules` (or `rules`, a local alias) instead, falling
+    // back to empty/safe defaults if the fetch hasn't finished yet or failed.
+    let chatRules = null;
+    let chatRulesFailed = false;
+    let chatRulesLoading = true;
 
-    const cannedReplies = [
-        { pattern: /\b(who are you|what is this site|about you|introduce yourself|your name|you)\b/i, reply: SECTION_SUMMARIES.about, section: 'about' },
-        { pattern: /^(hello|hi|hey)\b/i, reply: "Hi, I'm Amika's assistant. Ask me about her projects, skills, or background - or I can fill the contact form for you.", section: null },
-        { pattern: /\b(how are you|how're you|how you doing)\b/i, reply: 'Running smoothly, no stack overflow - thanks for asking! How can I help?', section: null },
-        { pattern: /\b(where are you from|where do you live|where is amika from|where is amika based)\b/i, reply: "I'm a local assistant living rent-free in this browser tab. Amika is based in Colombo, Sri Lanka - feel free to ask about her work there.", section: null },
-        { pattern: /\b(bye|goodbye|good night|goodnight|see you|later)\b/i, reply: 'Logging off gracefully - no force quit required. Come back anytime!', section: null },
-        {
-            pattern: /\b(what can you do|what are your capabilities|show menu|show options|help me|^help$)\b/i,
-            reply: "I'm more than a search box - I can act directly, not just describe things.\n\nPick a category below, or just ask me anything in plain English.",
-            section: null,
-            quick: ['Sections', 'Actions', 'Fun stuff']
-        },
-        {
-            pattern: /^sections$/i,
-            reply: 'Ask me about any of these and I\'ll summarize it and scroll you there:\n• About\n• Projects\n• Skills\n• Education\n• Contact\n\nYou can also name a project directly, e.g. "tell me about MealMatch".',
-            section: null,
-            quick: ['Projects', 'Skills', 'Education', 'Contact']
-        },
-        {
-            pattern: /^actions$/i,
-            reply: "Things I can actually do, not just talk about:\n• Open GitHub, LinkedIn, or any social link\n• Open a project's code - \"open MealMatch\"\n• Filter projects by category - \"show ML projects\"\n• Fill out the contact form for you\n• Copy the email address\n• Request the CV\n• Switch light/dark mode\n• Pause or resume animations\n• Launch your browser's hidden game - \"I'm bored\"\n• Scroll back to top\n• \"Surprise me\" with a random project\n• \"Restart\" to clear this chat",
-            section: null,
-            quick: ['Surprise me', 'Get in touch']
-        },
-        {
-            pattern: /^fun stuff$/i,
-            reply: "I've got a few easter eggs hiding in here 👀\nTry asking if I'm sentient, for a joke, or poking at pop culture (matrix, angels & devils...).\nSome need finding rather than asking - keep an eye on your keyboard.",
-            section: null
-        },
-        { pattern: /\b(newest|latest|recent)\b/i, reply: SECTION_SUMMARIES.featured, section: 'featured' },
-        { pattern: /\b(projects|portfolio|where is your code|code)\b/i, reply: SECTION_SUMMARIES.projects, section: 'projects' },
-        { pattern: /\b(skills|technologies|tech stack|what are your skills|what do you do)\b/i, reply: SECTION_SUMMARIES.skills, section: 'skills' },
-        { pattern: /\b(education|degree|university|school)\b/i, reply: SECTION_SUMMARIES.education, section: 'education' },
-        {
-            pattern: /\b(available for internship|open to internship|are you available|open for work|open to work|currently available)\b/i,
-            reply: 'Yes - actively looking for internships, and open to research or freelance collaborations too.\nWant to get in touch?',
-            section: null,
-            quick: ['Get in touch']
-        },
-        { pattern: /\b(internship|job|opportunity)\b/i, reply: "Amika's open to internships and job opportunities.\nUse the contact form and pick the right purpose, or just tell me and I'll fill it in for you.", section: 'contact' },
-        { pattern: /\b(how can i contact you|how do i contact you|^email$)\b/i, reply: SECTION_SUMMARIES.contact, section: 'contact' },
-        { pattern: /\b(gpa|grades|grade point|academic record|marks)\b/i, reply: 'No cumulative GPA published here, but recent module grades:\n• Database Systems - A\n• Web Technology - A\n• Programming Fundamentals - B\n• Computational Mathematics - B', section: 'education' },
-        { pattern: /\b(how accurate|model accuracy|accuracy of|churn.*(accuracy|score|performance))\b/i, reply: 'The churn prediction model:\n• Random Forest, 5-fold cross-validation\n• ~82.5% accuracy on 7,000+ records\n• Class imbalance handled with balanced class weights', section: 'about' },
-        { pattern: /\b(strongest skill|best skill|main skill|what are you best at|strongest at)\b/i, reply: 'Python and machine learning are the strongest - 85% and 80% on the skill bars.\nBacked by the churn prediction and fuel-price pipeline projects.', section: 'skills' },
-        { pattern: /\b(recommend|suggest|which project|best project|good project)\b/i, reply: 'For ML or data engineering: Sri Lanka Fuel Price Intelligence Pipeline.\nFor research or collaboration: MARGA Research Hub.', section: 'featured', quick: ['Surprise me', 'Projects'] },
-        { pattern: /\b(what should i learn|how do i start|where should i start|career advice)\b/i, reply: 'Start with Python and SQL, then build one small end-to-end project.\nAmika’s portfolio shows that progression through ML, web apps, and data pipelines.', section: 'skills' },
-        { pattern: /\b(tech stack|built with|what language|programming language)\b/i, reply: 'Main toolkit:\n• Python, Java, JavaScript, SQL\n• React / Node\n• Machine learning & data engineering\n• AWS', section: 'skills' },
-        // Easter eggs
-        { pattern: /\b(tell me a joke|make me laugh|know any jokes)\b/i, reply: 'Why do programmers prefer dark mode? Because light attracts bugs. 🐛', section: null },
-        { pattern: /\bsudo\b.*\bsandwich\b/i, reply: 'Permission denied. Nice try though - that one never works outside xkcd. 😏', section: null },
-        { pattern: /\b(konami|up up down down|secret code)\b/i, reply: 'Cheat code accepted. You found the hidden developer entrance.', section: null },
-        { pattern: /\b(matrix|red pill|blue pill)\b/i, reply: 'There is no spoon. There is only JavaScript, CSS, and one very determined portfolio.', section: null },
-        { pattern: /\b(angel|lucifer|devil|heaven|hell)\b/i, reply: 'The angels guard light mode, Lucifer keeps watch over dark mode, and I keep the portfolio running in between.', section: null },
-        { pattern: /\b(are you sentient|are you skynet|are you self.?aware|are you gpt|are you an ai|are you chatgpt)\b/i, reply: "I'm a simple rule-based assistant - no neural networks, no world domination plans. Just if/else statements pretending to be clever.", section: null },
-        { pattern: /\b(meaning of life|meaning of existence)\b/i, reply: '42, obviously. Though Amika would probably say it\'s shipping something that actually works.', section: null },
-        { pattern: /\b(do you dream|do you sleep)\b/i, reply: 'Only of well-documented code and O(n log n) solutions.', section: null }
-    ];
+    const EMPTY_RULES = { SECTION_SUMMARIES: {}, cannedReplies: [], sectionMap: [], statsPhrasing: {}, alreadyActiveLines: {} };
+
+    function loadChatRules() {
+        return fetch('chatbot-rules.json')
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                chatRules = {
+                    SECTION_SUMMARIES: data.SECTION_SUMMARIES || {},
+                    cannedReplies: (data.cannedReplies || []).map(item => ({
+                        // JSON can't hold a regex literal, so each rule stores a plain
+                        // `pattern` string plus a `flags` string (e.g. "i") and the
+                        // RegExp is rebuilt here, once, at load time.
+                        pattern: new RegExp(item.pattern, item.flags || ''),
+                        reply: item.reply,
+                        section: item.section || null,
+                        quick: item.quick || null
+                    })),
+                    sectionMap: data.sectionMap || [],
+                    statsPhrasing: data.statsPhrasing || {},
+                    alreadyActiveLines: data.alreadyActiveLines || {}
+                };
+            })
+            .catch(err => {
+                console.error('Failed to load chatbot-rules.json', err);
+                chatRulesFailed = true;
+            });
+    }
+
+    // Picks one of a few phrasing variants for "you asked for a state that's
+    // already active" replies. Falls back to a plain, non-randomized line if
+    // chatbot-rules.json hasn't loaded (or failed to), so this never throws.
+    function pickAlreadyActiveLine(category, state) {
+        const lines = chatRules && chatRules.alreadyActiveLines[category] && chatRules.alreadyActiveLines[category][state];
+        if (lines && lines.length) return pickLine(lines);
+        return category === 'theme' ? `Already in ${state} mode.` : `Animations are already ${state}.`;
+    }
 
     function resolveSingleQuery(rawText, done) {
+        const rules = chatRules || EMPTY_RULES;
         const lower = rawText.trim().toLowerCase();
         const normalized = normalizeSlang(lower);
         const corrected = correctSpelling(normalized);
@@ -978,16 +1078,45 @@
             return;
         }
 
+        if (detectCopyLinkIntent(corrected)) {
+            const url = window.location.href;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => showToast('Link copied ✓')).catch(() => { });
+            }
+            done('Portfolio link copied to your clipboard - share away.', null);
+            return;
+        }
+
+        if (detectListProjectsIntent(corrected)) {
+            const cards = Array.from(document.querySelectorAll('.p-card'));
+            if (cards.length) {
+                const titles = cards.map(card => (card.querySelector('.p-title') || {}).textContent.trim()).filter(Boolean);
+                done(`All ${titles.length} projects:\n${titles.map(t => '• ' + t).join('\n')}\n\nAsk about any one by name for details, or say "open" plus the name for its code.`, document.getElementById('projects'));
+                return;
+            }
+        }
+
+        const techQuery = detectTechSearchIntent(corrected);
+        if (techQuery) {
+            const cards = Array.from(document.querySelectorAll('.p-card'));
+            const matches = cards.filter(card =>
+                Array.from(card.querySelectorAll('.p-stack span')).some(tag => fuzzyTextIncludes(tag.textContent.toLowerCase(), techQuery))
+            );
+            if (matches.length) {
+                const titles = matches.map(card => (card.querySelector('.p-title') || {}).textContent.trim());
+                done(`Projects using ${techQuery}:\n${titles.map(t => '• ' + t).join('\n')}`, matches[0]);
+                return;
+            }
+            done(`Couldn't find a project tagged with "${techQuery}" - say "list all projects" to see everything.`, null);
+            return;
+        }
+
         const statLabel = detectStatsIntent(corrected);
         if (statLabel) {
             const value = getStatValue(statLabel);
-            if (value) {
-                const phrasing = {
-                    Projects: `${value} projects and counting - see them all below.`,
-                    Languages: `${value} programming languages in the toolkit.`,
-                    Graduating: `Graduating in ${value}.`
-                };
-                done(phrasing[statLabel], statLabel === 'Projects' ? document.getElementById('projects') : null);
+            const template = rules.statsPhrasing[statLabel];
+            if (value && template) {
+                done(template.replace('{value}', value), statLabel === 'Projects' ? document.getElementById('projects') : null);
                 return;
             }
         }
@@ -1004,23 +1133,16 @@
             return;
         }
 
-        for (const item of cannedReplies) {
+        for (const item of rules.cannedReplies) {
             if (item.pattern.test(lower) || item.pattern.test(normalized) || item.pattern.test(corrected)) {
                 done(item.reply, item.section ? document.getElementById(item.section) : null, item.quick);
                 return;
             }
         }
 
-        const sectionMap = [
-            { id: 'about', keys: ['about', 'background', 'bio'] },
-            { id: 'projects', keys: ['project', 'projects', 'work', 'archive'] },
-            { id: 'skills', keys: ['skill', 'skills', 'technologies', 'stack'] },
-            { id: 'education', keys: ['education', 'degree', 'university', 'college'] },
-            { id: 'contact', keys: ['contact', 'reach', 'linkedin', 'upwork'] }
-        ];
-        for (const s of sectionMap) {
+        for (const s of rules.sectionMap) {
             if (s.keys.some(k => fuzzyTextIncludes(corrected, k))) {
-                done(SECTION_SUMMARIES[s.id], document.getElementById(s.id));
+                done(rules.SECTION_SUMMARIES[s.id], document.getElementById(s.id));
                 return;
             }
         }
@@ -1046,18 +1168,33 @@
         done("I couldn't find exactly what you asked for.\nTry rephrasing, or say \"help\" to see everything I can do.", null, ['Help', 'Projects', 'Skills', 'Contact']);
     }
 
-    // Shows a bot reply for a single resolved query (typing delay, scroll, quick replies).
-    function showResolvedReply(text, onDone) {
+    // Resolves a single query and runs any side effect it triggers (window.open,
+    // a mailto navigation, clicking a filter button, ...) IMMEDIATELY, then hands
+    // back just the display info (reply text, scroll target, quick replies) for
+    // showing later. Kept separate from the on-screen delay below because a
+    // window.open() call only counts as "user-initiated" - to browsers, and to
+    // the extra popup blocking most ad blockers layer on top - when it happens
+    // synchronously inside the click/submit/keydown handler that started it.
+    // Queuing it behind a setTimeout (even a short "typing" one) breaks that
+    // chain and is exactly what gets it silently blocked.
+    function resolveQueryNow(text) {
+        let result = null;
+        resolveSingleQuery(text, (replyText, scrollTarget, quickOptions) => {
+            result = { replyText, scrollTarget, quickOptions };
+        });
+        return result;
+    }
+
+    // Shows an already-resolved reply after a natural-feeling typing delay.
+    function displayResolvedReply(text, resolved, onDone) {
         setChatTyping(true);
         setTimeout(() => {
-            resolveSingleQuery(text, (replyText, scrollTarget, quickOptions) => {
-                setChatTyping(false);
-                appendChatMessage(replyText, 'bot');
-                chatHistory.push({ role: 'assistant', content: replyText });
-                if (scrollTarget) scrollToElement(scrollTarget);
-                if (quickOptions) appendQuickReplies(quickOptions);
-                if (onDone) onDone();
-            });
+            setChatTyping(false);
+            appendChatMessage(resolved.replyText, 'bot');
+            chatHistory.push({ role: 'assistant', content: resolved.replyText });
+            if (resolved.scrollTarget) scrollToElement(resolved.scrollTarget);
+            if (resolved.quickOptions) appendQuickReplies(resolved.quickOptions);
+            if (onDone) onDone();
         }, naturalDelay(text));
     }
 
@@ -1086,6 +1223,12 @@
 
         const parts = splitCompoundIntents(normalizedFull);
 
+        // Resolve every part - and fire any window.open/mailto/filter-click side
+        // effect - right now, still inside the original user gesture's call
+        // stack, even for a multi-part message like "open github and linkedin".
+        // Only the typed-out display below is staggered per part.
+        const resolvedParts = parts.map(resolveQueryNow);
+
         function playPart(index) {
             if (index >= parts.length) {
                 setChatTyping(false);
@@ -1096,7 +1239,7 @@
                 }
                 return;
             }
-            showResolvedReply(parts[index], () => playPart(index + 1));
+            displayResolvedReply(parts[index], resolvedParts[index], () => playPart(index + 1));
         }
         playPart(0);
     }
@@ -1104,6 +1247,7 @@
     // Centralized handler for any user-provided chat text (typed or quick-reply)
     function handleChatUserText(text) {
         if (!text) return;
+        if (chatRulesLoading) return; // defensive: input/quick-replies are disabled while rules load, but don't act on a stray call
         if (Date.now() < silentUntil) return; // mid "silent treatment" - ignore
 
         if (RESTART_RE.test(text.trim())) {
@@ -1180,32 +1324,6 @@
     function pickLine(lines) {
         return lines[Math.floor(Math.random() * lines.length)];
     }
-    const ALREADY_ACTIVE_LINES = {
-        theme: {
-            dark: [
-                "Already dark in here. Lucifer never left 😈",
-                "Still dark mode - did you forget, or are you just testing me?",
-                "We're already there. Your eyes adjusted yet?"
-            ],
-            light: [
-                "Already living in the light 😇 the angels haven't moved.",
-                "Still light mode. Nothing to switch, chief.",
-                "We're already there. Might want sunglasses."
-            ]
-        },
-        motion: {
-            paused: [
-                "Already paused. Can't freeze something that's already standing still.",
-                "Nothing's moving in here - it's been paused this whole time.",
-                "Already stopped. That request just froze twice."
-            ],
-            running: [
-                "Already running. They never stopped - déjà vu much?",
-                "Still moving, same as before you asked.",
-                "Animations are already live. No restart needed."
-            ]
-        }
-    };
 
     // Resolves any already-spelling-confirmed text into a direct bot control
     // (contact flow, theme switch, motion toggle) or, failing that, a normal
@@ -1243,7 +1361,7 @@
         // of a redundant "switched" message. Same pattern for every toggle.
         if (/\b(light mode|make it light|switch to light|light theme|light)\b/i.test(lower)) {
             if ((document.documentElement.getAttribute('data-theme') || 'dark') === 'light') {
-                botReply(pickLine(ALREADY_ACTIVE_LINES.theme.light), { delay: 450 });
+                botReply(pickAlreadyActiveLine('theme', 'light'), { delay: 450 });
                 return;
             }
             applyTheme('light');
@@ -1252,7 +1370,7 @@
         }
         if (/\b(dark mode|make it dark|switch to dark|dark theme|dark)\b/i.test(lower)) {
             if ((document.documentElement.getAttribute('data-theme') || 'dark') === 'dark') {
-                botReply(pickLine(ALREADY_ACTIVE_LINES.theme.dark), { delay: 450 });
+                botReply(pickAlreadyActiveLine('theme', 'dark'), { delay: 450 });
                 return;
             }
             applyTheme('dark');
@@ -1261,50 +1379,45 @@
         }
         if (/\b(pause|stop|freeze)\b.*\b(animation|motion)/i.test(lower) || /\b(animation|motion)\b.*\b(pause|stop|off)/i.test(lower)) {
             if ((document.documentElement.getAttribute('data-motion') || 'running') === 'paused') {
-                botReply(pickLine(ALREADY_ACTIVE_LINES.motion.paused), { delay: 450 });
+                botReply(pickAlreadyActiveLine('motion', 'paused'), { delay: 450 });
                 return;
             }
             setMotion('paused');
+            showMotionPopup('paused');
             botReply("Animations paused - everything's holding still now.", { delay: 450 });
             return;
         }
         if (/\b(resume|play|start|unpause)\b.*\b(animation|motion)/i.test(lower) || /\b(animation|motion)\b.*\b(resume|on)/i.test(lower)) {
             if ((document.documentElement.getAttribute('data-motion') || 'running') === 'running') {
-                botReply(pickLine(ALREADY_ACTIVE_LINES.motion.running), { delay: 450 });
+                botReply(pickAlreadyActiveLine('motion', 'running'), { delay: 450 });
                 return;
             }
             setMotion('running');
+            showMotionPopup('running');
             botReply('Animations resumed - things are moving again.', { delay: 450 });
             return;
         }
 
-        // Bot control: point to the browser's built-in hidden game. Detects
-        // which of Chrome/Edge/Opera GX/Vivaldi is running and replies with
-        // the offline address-bar link plus the online alternative (opened
-        // directly, same as any other outbound link this bot opens). The
-        // offline link can't be auto-navigated to (browsers block script-
-        // initiated loads of their own internal chrome://, edge://, etc.
-        // pages - by design, to stop malicious sites doing the same thing),
-        // so it's copied to the clipboard instead, same pattern as the
-        // "copy email" action above.
+        // Bot control: open the browser's built-in hidden game directly - no
+        // clipboard copying, no offline address-bar link, just a new tab.
+        // Detects which of Chrome/Edge/Opera GX/Vivaldi is running so it can
+        // open that browser's own online version where one exists; anything
+        // else (no online version, or browser not detected) falls back to
+        // the classic online dino runner, same as every other outbound link
+        // this bot opens.
         if (detectHiddenGameIntent(lower)) {
             const browserKey = detectCurrentBrowser();
             const game = browserKey ? BROWSER_GAMES[browserKey] : null;
-            if (game && navigator.clipboard) {
-                navigator.clipboard.writeText(game.offline).then(() => showToast(`${game.offline} copied ✓`)).catch(() => { });
-            }
             if (game && game.online) {
                 window.open(game.online, '_blank', 'noopener');
-                botReply(`You're on ${game.label}, so ${game.name} is built right in.\nOffline: "${game.offline}" is copied to your clipboard - just paste it into the address bar (no internet needed).\nAlso opened the online version in a new tab.`, { delay: 450 });
-                return;
-            }
-            if (game) {
-                botReply(`You're on ${game.label}, so ${game.name} is built right in.\n"${game.offline}" is copied to your clipboard - paste it into the address bar to play. It's ${game.label}-exclusive, no online version exists.`, { delay: 450 });
+                botReply(`You're on ${game.label}, so here's ${game.name} - opened in a new tab.`, { delay: 450 });
                 return;
             }
             const fallback = BROWSER_GAMES.chrome;
             window.open(fallback.online, '_blank', 'noopener');
-            botReply("Couldn't tell which browser you're on (Chrome, Edge, Opera GX, and Vivaldi all have one built in) - opened the classic dino runner in a new tab instead.", { delay: 450 });
+            botReply(game
+                ? `${game.label} doesn't have an online version of its hidden game - opened the classic dino runner in a new tab instead.`
+                : "Couldn't tell which browser you're on - opened the classic dino runner in a new tab.", { delay: 450 });
             return;
         }
 
@@ -1374,6 +1487,28 @@
                 return;
             }
             handleChatUserText(text);
+        });
+
+        // The rule data (canned replies, section summaries, etc.) loads
+        // async from chatbot-rules.json, so the textarea and send button
+        // stay disabled until it resolves - this guards against the user
+        // typing a query before there's anything to match it against. The
+        // greeting below is hardcoded (not part of the rule data) so it can
+        // still show immediately while the fetch is in flight.
+        const originalPlaceholder = input.placeholder;
+        input.disabled = true;
+        input.placeholder = 'Loading assistant…';
+        const send = form.querySelector('.chat-send');
+        if (send) send.disabled = true;
+
+        loadChatRules().finally(() => {
+            chatRulesLoading = false;
+            input.disabled = false;
+            input.placeholder = originalPlaceholder;
+            if (send) send.disabled = chatBusy;
+            if (chatRulesFailed) {
+                botReply("Heads up - I couldn't load my response data just now, so some answers may be limited. Refreshing the page usually fixes it. Direct actions like opening links, filtering projects, and the contact form still work fine.", { delay: 500 });
+            }
         });
 
         botReply("Hi! I'm Amika's assistant.\nAsk about projects, skills, or background - I can open links, filter projects, fill the contact form, or surprise you with a random pick.\nSay \"help\" for the full menu.", { delay: 600 });
