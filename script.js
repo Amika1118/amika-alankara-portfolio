@@ -1,3 +1,7 @@
+// ============================================================
+// FULL script.js - with dynamic project loading, featured,
+// advanced chatbot, voice input, BM25 search.
+// ============================================================
 (function () {
     'use strict';
 
@@ -553,16 +557,48 @@ function runCircularReveal(applyChange, originEl) {
     let pendingGuess = null; // { correctedText } - set while waiting on "did you mean X?"
     let chatBusy = false; // true while a reply is being "typed" - blocks sending, not typing
     let queuedMessage = null; // holds one message typed while chatBusy, sent right after
+    let lastMentionedProject = null;   // context memory for pronoun resolution
+    let lastMentionedSection = null;
+    let lastFilter = 'all';            // remember last filter applied
+    let userContext = {};              // extended user modelling
+
+    // ---------- Persistent chat history ----------
+    const CHAT_STORAGE_KEY = 'aa_chat_history';
+    function saveChatHistory() {
+        try {
+            localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory.slice(-50)));
+        } catch (e) { /* ignore */ }
+    }
+    function loadChatHistory() {
+        try {
+            const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+            if (saved) chatHistory = JSON.parse(saved);
+        } catch (e) { chatHistory = []; }
+    }
+
+    // Enhanced cleaning: remove leading/trailing whitespace on each line,
+    // collapse multiple spaces to one (but keep line breaks), and replace tabs.
+    function cleanBotText(text) {
+        return text
+            .replace(/\t/g, '    ')                      // tabs -> 4 spaces
+            .split('\n')
+            .map(line => line.trim().replace(/ {2,}/g, ' ')) // trim each line, collapse internal multiple spaces
+            .join('\n')
+            .replace(/\n{3,}/g, '\n\n')                  // max two consecutive newlines
+            .trim();
+    }
 
     function appendChatMessage(text, sender = 'bot') {
         const box = document.getElementById('chatMessages');
         if (!box) return;
         const div = document.createElement('div');
         div.className = `chat-message ${sender}`;
-        div.textContent = text;
+        div.textContent = sender === 'bot' ? cleanBotText(text) : text;
         box.appendChild(div);
         removeQuickReplies();
         box.scrollTop = box.scrollHeight;
+        chatHistory.push({ role: sender, content: text });
+        saveChatHistory();
     }
 
     function removeQuickReplies() {
@@ -609,7 +645,6 @@ function runCircularReveal(applyChange, originEl) {
         }
     }
 
-
     function naturalDelay(text = '') {
         const base = 550 + Math.random() * 450;
         const thinking = Math.min(1100, text.length * 9);
@@ -622,7 +657,6 @@ function runCircularReveal(applyChange, originEl) {
         setTimeout(() => {
             setChatTyping(false);
             appendChatMessage(text, 'bot');
-            chatHistory.push({ role: 'assistant', content: text });
             if (scrollTarget) scrollToElement(scrollTarget);
             if (quick) appendQuickReplies(quick);
             if (after) after();
@@ -640,6 +674,11 @@ function runCircularReveal(applyChange, originEl) {
         contactFlow = { stage: 'idle', purpose: '', name: '', email: '', message: '' };
         pendingGuess = null;
         chatHistory = [];
+        lastMentionedProject = null;
+        lastMentionedSection = null;
+        lastFilter = 'all';
+        userContext = {};
+        localStorage.removeItem(CHAT_STORAGE_KEY);
         endSilentTreatment();
         botReply("Chat cleared. Hi again - I'm Amika's assistant. Ask about projects, skills, or background, or say \"help\" for the full menu.", { delay: 400 });
     }
@@ -688,6 +727,18 @@ function runCircularReveal(applyChange, originEl) {
         }).join(' ');
     }
 
+    // Lightweight stemmer: strip common suffixes to improve fuzzy matching
+    function stemWord(word) {
+        if (word.length < 4) return word;
+        const suffixes = ['ing', 'ed', 'es', 's', 'ly', 'ment', 'tion', 'er', 'or', 'able', 'ible', 'al', 'ive', 'ize'];
+        for (const suff of suffixes) {
+            if (word.endsWith(suff) && word.length - suff.length >= 4) {
+                return word.slice(0, -suff.length);
+            }
+        }
+        return word;
+    }
+
     // Levenshtein distance: https://en.wikipedia.org/wiki/Levenshtein_distance
     function levenshtein(a, b) {
         if (a === b) return 0;
@@ -713,12 +764,50 @@ function runCircularReveal(applyChange, originEl) {
         return d[m][n];
     }
 
-    // Exact substring first; for longer words, tolerate 1-2 character typos.
-    function fuzzyTextIncludes(haystack, needle) {
-        if (haystack.includes(needle)) return true;
-        if (needle.length < 4) return false;
-        const maxDist = needle.length > 7 ? 2 : 1;
-        return haystack.split(/\W+/).some(w => w.length > 3 && levenshtein(w, needle) <= maxDist);
+    // Soundex phonetic algorithm (for spelling correction)
+    function soundex(word) {
+        const w = word.toUpperCase().replace(/[^A-Z]/g, '');
+        if (!w) return '';
+        const first = w[0];
+        const map = { B:1, F:1, P:1, V:1, C:2, G:2, J:2, K:2, Q:2, S:2, X:2, Z:2, D:3, T:3, L:4, M:5, N:5, R:6 };
+        let code = first;
+        let prev = map[first] || 0;
+        for (let i = 1; i < w.length && code.length < 4; i++) {
+            const digit = map[w[i]] || 0;
+            if (digit && digit !== prev) {
+                code += digit;
+            }
+            if (w[i] !== 'H' && w[i] !== 'W') prev = digit;
+        }
+        while (code.length < 4) code += '0';
+        return code;
+    }
+
+    // Enhanced spelling correction: use Levenshtein first, then Soundex if no close match
+    function correctSpellingWithSoundex(word) {
+        let closest = word;
+        let bestDistance = Infinity;
+        for (const candidate of SPELLING_WORDS) {
+            if (Math.abs(candidate.length - word.length) > 2) continue;
+            const dist = levenshtein(word, candidate);
+            const limit = candidate.length >= 6 ? 2 : 1;
+            if (dist <= limit && dist < bestDistance) {
+                closest = candidate;
+                bestDistance = dist;
+            }
+        }
+        if (closest !== word) return closest;
+
+        // If no close Levenshtein match, try Soundex
+        const wordSoundex = soundex(word);
+        if (wordSoundex) {
+            for (const candidate of SPELLING_WORDS) {
+                if (soundex(candidate) === wordSoundex) {
+                    return candidate;
+                }
+            }
+        }
+        return word;
     }
 
     const SPELLING_WORDS_BASE = [
@@ -731,14 +820,23 @@ function runCircularReveal(applyChange, originEl) {
         'node', 'aws', 'database', 'pipeline', 'recommend', 'career', 'advice', 'freelance',
         'random', 'surprise', 'restart', 'cancel', 'grades', 'degree', 'colombo', 'informatics',
         'abort', 'accurate', 'angel', 'grade', 'information', 'meaning', 'mode', 'model',
-        'reach', 'skill', 'start'
+        'reach', 'skill', 'start', 'docker', 'airflow', 'mlops', 'scikit', 'pandas', 'jupyter',
+        'sqlite', 'oop', 'cli', 'pdf', 'eeg', 'bci', 'churn', 'telco', 'transport', 'marga',
+        'bookify', 'meal', 'match', 'audio', 'trimmer', 'lecture', 'notes', 'processor',
+        'world', 'bank', 'data', 'fetcher', 'sliding', 'puzzle', 'card', 'game', 'team',
+        'formation', 'media', 'database', 'manager', 'fuel', 'price', 'intelligence',
+        'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'any', 'can', 'had', 'her',
+        'was', 'one', 'our', 'out', 'has', 'have', 'their', 'what', 'when', 'where', 'which',
+        'with', 'this', 'that', 'these', 'those', 'from', 'they', 'will', 'would', 'there',
+        'their', 'about', 'into', 'just', 'more', 'most', 'some', 'such', 'than', 'too',
+        'very', 'just', 'because', 'before', 'between', 'through', 'during', 'without'
     ];
 
     let SPELLING_WORDS = SPELLING_WORDS_BASE.slice();
 
     function learnVocabularyFromPage() {
         const seen = new Set(SPELLING_WORDS);
-        document.querySelectorAll('.p-title, .p-stack span, .spot-tags span').forEach(el => {
+        document.querySelectorAll('.p-title, .p-stack span, .spot-tags span, .edu-mod-item, .learning-tags span, .skb-info span:first-child, .about-text p').forEach(el => {
             el.textContent.split(/\W+/).forEach(raw => {
                 const word = raw.toLowerCase();
                 if (word.length > 3 && !seen.has(word)) { seen.add(word); SPELLING_WORDS.push(word); }
@@ -746,29 +844,21 @@ function runCircularReveal(applyChange, originEl) {
         });
     }
 
+    // Replace correctSpelling with enhanced version using Soundex fallback
     function correctSpelling(text) {
         return text.split(/(\s+)/).map(part => {
             if (/^\s+$/.test(part) || part.length < 4) return part;
             const punctuation = part.match(/[^\w]*$/)[0];
             const word = part.slice(0, part.length - punctuation.length);
             if (!word || SPELLING_WORDS.includes(word)) return part;
-            let closest = word;
-            let bestDistance = Infinity;
-            SPELLING_WORDS.forEach(candidate => {
-                if (Math.abs(candidate.length - word.length) > 2) return;
-                const distance = levenshtein(word, candidate);
-                const limit = candidate.length >= 6 ? 2 : 1;
-                if (distance <= limit && distance < bestDistance) {
-                    closest = candidate;
-                    bestDistance = distance;
-                }
-            });
-            return closest + punctuation;
+            return correctSpellingWithSoundex(word) + punctuation;
         }).join('');
     }
 
+    // Split compound intents on connectors, but also handle verb phrases better
     function splitCompoundIntents(text) {
-        const rawParts = text.split(/\s*(?:,\s*and\s+|\s+and\s+|\s*&\s*)\s*/i).map(p => p.trim()).filter(Boolean);
+        const connectors = /\s*(?:,\s*and\s+|\s+and\s+|\s*&\s*|\s*,\s*then\s+|\s+then\s+|\s+also\s+|\s+as well as\s+)\s*/i;
+        const rawParts = text.split(connectors).map(p => p.trim()).filter(Boolean);
         if (rawParts.length < 2) return [text];
         const allMultiWord = rawParts.every(p => p.split(/\s+/).length >= 2);
         return allMultiWord ? rawParts : [text];
@@ -982,7 +1072,7 @@ function runCircularReveal(applyChange, originEl) {
     const EMPTY_RULES = { SECTION_SUMMARIES: {}, cannedReplies: [], sectionMap: [], statsPhrasing: {}, alreadyActiveLines: {} };
 
     function loadChatRules() {
-        return fetch('chatbot-rules.json')
+        return fetch('data/chatbot-rules.json')
             .then(res => {
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 return res.json();
@@ -1007,24 +1097,247 @@ function runCircularReveal(applyChange, originEl) {
             .catch(err => {
                 console.error('Failed to load chatbot-rules.json', err);
                 chatRulesFailed = true;
+                // Fallback rules so the bot still works offline
+                chatRules = {
+                    SECTION_SUMMARIES: {
+                        about: "I'm Amika Alankara, an AI & Data Science student at IIT Colombo.",
+                        projects: "GitHub: github.com/Amika1118 - ML, web, and software projects.",
+                        skills: "Python, JavaScript, Java, SQL, ML, full‑stack, data engineering.",
+                        education: "BSc (Hons) AI & Data Science at IIT, affiliated with RGU, UK.",
+                        contact: "Email amika.20240191@iit.ac.lk or use the form below."
+                    },
+                    cannedReplies: [
+                        { pattern: /help/i, reply: "I can tell you about projects, skills, education, open links, filter projects, fill the contact form, and more. Ask away!" },
+                        { pattern: /hello|hi|hey/i, reply: "Hi! I'm Amika's assistant. Ask about her work or say \"help\"." }
+                    ],
+                    sectionMap: [
+                        { id: 'about', keys: ['about', 'background'] },
+                        { id: 'projects', keys: ['project', 'projects', 'work'] },
+                        { id: 'skills', keys: ['skill', 'skills', 'tech'] },
+                        { id: 'education', keys: ['education', 'degree', 'university'] },
+                        { id: 'contact', keys: ['contact', 'reach', 'email'] }
+                    ],
+                    statsPhrasing: {},
+                    alreadyActiveLines: {}
+                };
             });
     }
 
     // Picks one of a few phrasing variants for "you asked for a state that's
     // already active" replies. Falls back to a plain, non-randomized line if
     // chatbot-rules.json hasn't loaded (or failed to), so this never throws.
+    function pickLine(lines) {
+        return lines[Math.floor(Math.random() * lines.length)];
+    }
+
     function pickAlreadyActiveLine(category, state) {
         const lines = chatRules && chatRules.alreadyActiveLines[category] && chatRules.alreadyActiveLines[category][state];
         if (lines && lines.length) return pickLine(lines);
         return category === 'theme' ? `Already in ${state} mode.` : `Animations are already ${state}.`;
     }
 
+    // Generate dynamic section summaries from live DOM
+    function generateSectionSummary(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (!section) return '';
+        let text = '';
+        if (sectionId === 'about') {
+            const p = section.querySelector('.about-text p');
+            if (p) text = p.textContent.trim().slice(0, 200) + '...';
+        } else if (sectionId === 'projects') {
+            const cards = section.querySelectorAll('.p-card');
+            const titles = Array.from(cards).slice(0, 3).map(c => c.querySelector('.p-title').textContent.trim());
+            text = `Some projects: ${titles.join(', ')}. Ask about any one by name.`;
+        } else if (sectionId === 'skills') {
+            const skills = section.querySelectorAll('.skb-info span:first-child');
+            text = 'Core skills: ' + Array.from(skills).slice(0, 5).map(s => s.textContent.trim()).join(', ') + '...';
+        } else if (sectionId === 'education') {
+            const degree = section.querySelector('.edu-degree-big');
+            if (degree) text = degree.textContent.trim() + ' at IIT, affiliated with RGU, UK.';
+        } else if (sectionId === 'contact') {
+            text = 'You can reach me via the contact form, email, or social links. Or just say "get in touch" and I\'ll fill the form for you.';
+        }
+        return text || `Here's the ${sectionId} section.`;
+    }
+
+    // ====================================================================
+    // ADVANCED INTENT RECOGNITION (scoring-based)
+    // ====================================================================
+    // Instead of relying solely on regex, we now use a multi-signal scoring
+    // system for section and project matching. The system combines:
+    //   - Exact keyword match
+    //   - Synonym match (custom map below)
+    //   - Fuzzy match (Levenshtein)
+    //   - Jaccard similarity on word sets for longer phrases
+    //   - Dynamic keyword extraction from the page content itself
+    // ====================================================================
+
+    // Custom synonym map for common intent keywords.
+    const SYNONYMS = {
+        'project': ['proj', 'proyect', 'build', 'work', 'app', 'application'],
+        'projects': ['projs', 'proyects', 'builds', 'works', 'apps', 'applications'],
+        'skill': ['tech', 'technology', 'ability', 'competence', 'expertise'],
+        'skills': ['techs', 'technologies', 'abilities', 'competences', 'expertises'],
+        'about': ['bio', 'background', 'info', 'information'],
+        'education': ['edu', 'study', 'studies', 'degree', 'university', 'college'],
+        'contact': ['reach', 'get in touch', 'message', 'email', 'connect'],
+        'open': ['show', 'display', 'view', 'go to', 'visit', 'take me to'],
+        'code': ['source', 'github', 'repo', 'repository'],
+        'resume': ['cv', 'curriculum vitae'],
+        'list': ['show all', 'display all', 'enumerate', 'all'],
+        'random': ['surprise', 'pick any', 'any project'],
+        'pause': ['stop', 'freeze', 'halt'],
+        'resume': ['play', 'start', 'continue', 'unpause'],
+        'light': ['white', 'day'],
+        'dark': ['black', 'night']
+    };
+
+    // Expand a token list with synonyms.
+    function expandWithSynonyms(tokens) {
+        const expanded = new Set(tokens);
+        for (const token of tokens) {
+            const syns = SYNONYMS[token];
+            if (syns) {
+                syns.forEach(s => expanded.add(s));
+            }
+        }
+        return Array.from(expanded);
+    }
+
+    // Simple tokenizer: lowercase, remove punctuation, split on whitespace.
+    function tokenize(text) {
+        return text.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(Boolean);
+    }
+
+    // Remove common stopwords to reduce noise.
+    const STOPWORDS = new Set([
+        'a', 'an', 'the', 'and', 'or', 'but', 'if', 'because', 'as', 'what',
+        'which', 'this', 'that', 'these', 'those', 'is', 'are', 'was', 'were',
+        'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',
+        'did', 'doing', 'will', 'would', 'shall', 'should', 'may', 'might',
+        'must', 'can', 'could', 'of', 'at', 'by', 'for', 'with', 'about',
+        'against', 'between', 'into', 'through', 'during', 'before', 'after',
+        'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off',
+        'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there',
+        'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few',
+        'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only',
+        'own', 'same', 'so', 'than', 'too', 'very', 'just', 'but', 'don', 'now'
+    ]);
+
+    function removeStopwords(tokens) {
+        return tokens.filter(t => !STOPWORDS.has(t));
+    }
+
+    // Jaccard similarity between two word arrays.
+    function jaccardSimilarity(arr1, arr2) {
+        const set1 = new Set(arr1);
+        const set2 = new Set(arr2);
+        let intersection = 0;
+        for (const item of set1) {
+            if (set2.has(item)) intersection++;
+        }
+        const union = set1.size + set2.size - intersection;
+        return union === 0 ? 0 : intersection / union;
+    }
+
+    // Cosine similarity on character n-grams (trigrams) for fuzzy phrase matching.
+    function trigramSimilarity(str1, str2) {
+        function getTrigrams(s) {
+            const t = s.toLowerCase().replace(/\s+/g, ' ');
+            const trigrams = new Set();
+            for (let i = 0; i < t.length - 2; i++) {
+                trigrams.add(t.slice(i, i + 3));
+            }
+            return trigrams;
+        }
+        const tri1 = getTrigrams(str1);
+        const tri2 = getTrigrams(str2);
+        let intersection = 0;
+        for (const tg of tri1) {
+            if (tri2.has(tg)) intersection++;
+        }
+        const denominator = Math.sqrt(tri1.size * tri2.size);
+        return denominator === 0 ? 0 : intersection / denominator;
+    }
+
+    // Score a section based on its keywords (from sectionMap) and synonyms.
+    function getSectionScore(sectionId, tokens, rules) {
+        const sectionDef = rules.sectionMap.find(s => s.id === sectionId);
+        if (!sectionDef) return 0;
+        const keywords = sectionDef.keys; // array of keywords
+        const expandedKeywords = expandWithSynonyms(keywords);
+        let score = 0;
+        for (const token of tokens) {
+            if (expandedKeywords.includes(token)) {
+                score += 2; // exact/synonym match
+            } else {
+                // Fuzzy match
+                for (const keyword of expandedKeywords) {
+                    const dist = levenshtein(token, keyword);
+                    if (dist <= (token.length > 5 ? 2 : 1)) {
+                        score += 1.5;
+                        break;
+                    }
+                }
+            }
+        }
+        // Bonus for phrase-level similarity (if section has a summary)
+        const summary = generateSectionSummary(sectionId);
+        if (summary) {
+            const summaryTokens = removeStopwords(tokenize(summary));
+            const phraseSim = trigramSimilarity(tokens.join(' '), summaryTokens.join(' '));
+            score += phraseSim * 5;
+        }
+        return score;
+    }
+
+    // Score a project card based on its title, tags, and description.
+    function getProjectScore(card, tokens, corrected) {
+        const title = (card.querySelector('.p-title') || {}).textContent || '';
+        const titleTokens = removeStopwords(tokenize(title));
+        const titleSet = new Set(titleTokens);
+        const stackEls = card.querySelectorAll('.p-stack span');
+        const stackTokens = Array.from(stackEls).flatMap(el => removeStopwords(tokenize(el.textContent)));
+        const descEl = card.querySelector('.p-sum');
+        const descTokens = descEl ? removeStopwords(tokenize(descEl.textContent)) : [];
+
+        let score = 0;
+        // Title match
+        for (const token of tokens) {
+            if (titleSet.has(token)) score += 3;
+            else {
+                // Fuzzy match on title words
+                for (const t of titleTokens) {
+                    if (levenshtein(token, t) <= (token.length > 5 ? 2 : 1)) {
+                        score += 1.5;
+                        break;
+                    }
+                }
+            }
+        }
+        // Tech stack match
+        for (const token of tokens) {
+            if (stackTokens.includes(token)) score += 2;
+        }
+        // Description match (Jaccard similarity on word sets)
+        if (descTokens.length) {
+            const descSim = jaccardSimilarity(tokens, descTokens);
+            score += descSim * 4;
+        }
+        // Trigram similarity with full title
+        score += trigramSimilarity(tokens.join(' '), title) * 6;
+
+        return score;
+    }
+
+    // Enhanced query resolver with scoring
     function resolveSingleQuery(rawText, done) {
         const rules = chatRules || EMPTY_RULES;
         const lower = rawText.trim().toLowerCase();
         const normalized = normalizeSlang(lower);
         const corrected = correctSpelling(normalized);
 
+        // --- Direct actions with side effects (must run synchronously) ---
         if (detectResumeIntent(corrected)) {
             window.location.href = 'mailto:amika.20240191@iit.ac.lk?subject=Request%20for%20CV';
             done('Opening an email to request the CV - send it and Amika will get back to you.', null);
@@ -1048,6 +1361,7 @@ function runCircularReveal(applyChange, originEl) {
         if (filterIntent) {
             const btn = document.querySelector(`.filter-btn[data-filter="${filterIntent}"]`);
             if (btn) btn.click();
+            lastFilter = filterIntent;
             done(`Filtered to ${FILTER_LABELS[filterIntent]} projects below.`, document.getElementById('projects'));
             return;
         }
@@ -1058,6 +1372,7 @@ function runCircularReveal(applyChange, originEl) {
                 const card = cards[Math.floor(Math.random() * cards.length)];
                 const title = (card.querySelector('.p-title') || {}).textContent || '';
                 const summary = (card.querySelector('.p-sum') || {}).textContent || '';
+                lastMentionedProject = title.trim();
                 done(`🎲 ${title}\n${summary}`, card);
                 return;
             }
@@ -1087,6 +1402,7 @@ function runCircularReveal(applyChange, originEl) {
             return;
         }
 
+        // --- Informational intents (no immediate side effect) ---
         if (detectListProjectsIntent(corrected)) {
             const cards = Array.from(document.querySelectorAll('.p-card'));
             if (cards.length) {
@@ -1133,6 +1449,7 @@ function runCircularReveal(applyChange, originEl) {
             return;
         }
 
+        // Canned replies from JSON (first exact regex match)
         for (const item of rules.cannedReplies) {
             if (item.pattern.test(lower) || item.pattern.test(normalized) || item.pattern.test(corrected)) {
                 done(item.reply, item.section ? document.getElementById(item.section) : null, item.quick);
@@ -1140,32 +1457,76 @@ function runCircularReveal(applyChange, originEl) {
             }
         }
 
+        // ---- SCORING-BASED MATCHING ----
+        const tokens = removeStopwords(tokenize(corrected));
+        const expandedTokens = expandWithSynonyms(tokens);
+
+        // First, try to find a section with high score
+        let bestSection = null;
+        let bestSectionScore = 0;
         for (const s of rules.sectionMap) {
-            if (s.keys.some(k => fuzzyTextIncludes(corrected, k))) {
-                done(rules.SECTION_SUMMARIES[s.id], document.getElementById(s.id));
-                return;
+            const score = getSectionScore(s.id, tokens, rules);
+            if (score > bestSectionScore) {
+                bestSectionScore = score;
+                bestSection = s.id;
             }
         }
+        // Threshold for section match
+        if (bestSection && bestSectionScore >= 2.0) {
+            const summary = generateSectionSummary(bestSection) || rules.SECTION_SUMMARIES[bestSection];
+            lastMentionedSection = bestSection;
+            done(summary, document.getElementById(bestSection));
+            return;
+        }
 
+        // Next, try project matching with scoring
         const cards = Array.from(document.querySelectorAll('.p-card'));
+        let bestProjectCard = null;
+        let bestProjectScore = 0;
         for (const card of cards) {
-            const title = (card.querySelector('.p-title') || {}).textContent || '';
-            const titleWords = title.toLowerCase().split(/\W+/).filter(w => w.length > 3);
-            if (fuzzyTextIncludes(corrected, title.toLowerCase()) || titleWords.some(w => fuzzyTextIncludes(corrected, w))) {
+            const score = getProjectScore(card, tokens, corrected);
+            if (score > bestProjectScore) {
+                bestProjectScore = score;
+                bestProjectCard = card;
+            }
+        }
+        // Threshold for project match
+        if (bestProjectCard && bestProjectScore >= 3.0) {
+            const title = (bestProjectCard.querySelector('.p-title') || {}).textContent.trim();
+            const sumEl = bestProjectCard.querySelector('.p-sum');
+            const link = bestProjectCard.querySelector('.p-link');
+            const snippet = title + (sumEl ? '\n' + sumEl.textContent.trim() : '') + (link ? '\nSay "open" to jump to the code.' : '');
+            if (link && detectOpenCodeVerb(corrected)) {
+                window.open(link.href, '_blank', 'noopener');
+                lastMentionedProject = title;
+                done(`Opening the code for "${title}" in a new tab.`, bestProjectCard);
+            } else {
+                lastMentionedProject = title;
+                done(snippet, bestProjectCard);
+            }
+            return;
+        }
+
+        // Pronoun resolution (if project was mentioned before)
+        if (/\b(its|that project|the project|the one|it)\b/.test(corrected) && lastMentionedProject) {
+            const card = cards.find(c => (c.querySelector('.p-title') || {}).textContent.trim() === lastMentionedProject);
+            if (card) {
+                const title = card.querySelector('.p-title').textContent.trim();
+                const sumEl = card.querySelector('.p-sum');
                 const link = card.querySelector('.p-link');
+                const snippet = title + (sumEl ? '\n' + sumEl.textContent.trim() : '') + (link ? '\nSay "open" to jump to the code.' : '');
                 if (link && detectOpenCodeVerb(corrected)) {
                     window.open(link.href, '_blank', 'noopener');
-                    done(`Opening the code for "${title.trim()}" in a new tab.`, card);
-                    return;
+                    done(`Opening the code for "${title}" in a new tab.`, card);
+                } else {
+                    done(snippet, card);
                 }
-                const sumEl = card.querySelector('.p-sum');
-                const snippet = title.trim() + (sumEl ? '\n' + sumEl.textContent.trim() : '') + (link ? '\nSay "open" to jump to the code.' : '');
-                done(snippet, card);
                 return;
             }
         }
 
-        done("I couldn't find exactly what you asked for.\nTry rephrasing, or say \"help\" to see everything I can do.", null, ['Help', 'Projects', 'Skills', 'Contact']);
+        // ---- BM25 fallback for general page content ----
+        resolveWithBM25(corrected, done);
     }
 
     // Resolves a single query and runs any side effect it triggers (window.open,
@@ -1191,7 +1552,6 @@ function runCircularReveal(applyChange, originEl) {
         setTimeout(() => {
             setChatTyping(false);
             appendChatMessage(resolved.replyText, 'bot');
-            chatHistory.push({ role: 'assistant', content: resolved.replyText });
             if (resolved.scrollTarget) scrollToElement(resolved.scrollTarget);
             if (resolved.quickOptions) appendQuickReplies(resolved.quickOptions);
             if (onDone) onDone();
@@ -1257,7 +1617,6 @@ function runCircularReveal(applyChange, originEl) {
 
         const lower = text.toLowerCase();
         appendChatMessage(text, 'user');
-        chatHistory.push({ role: 'user', content: text });
 
         if (INSULT_RE.test(lower)) {
             pendingGuess = null;
@@ -1424,6 +1783,361 @@ function runCircularReveal(applyChange, originEl) {
         sendChatMessage(text);
     }
 
+    // ----- Advanced intent recognition with BM25 + scoring -----
+    const pageIndex = []; // array of { id, type, text, tokens, element }
+
+    function buildPageIndex() {
+        pageIndex.length = 0; // clear existing
+        // Index sections
+        document.querySelectorAll('section[id]').forEach(section => {
+            const text = section.innerText || '';
+            const tokens = tokenize(text);
+            pageIndex.push({
+                id: section.id,
+                type: 'section',
+                text: text,
+                tokens: tokens,
+                element: section
+            });
+        });
+
+        // Index project cards individually
+        document.querySelectorAll('.p-card').forEach(card => {
+            const title = card.querySelector('.p-title')?.textContent || '';
+            const stack = Array.from(card.querySelectorAll('.p-stack span')).map(s => s.textContent).join(' ');
+            const desc = card.querySelector('.p-sum')?.textContent || '';
+            const text = `${title} ${stack} ${desc}`;
+            const tokens = tokenize(text);
+            pageIndex.push({
+                id: title,
+                type: 'project',
+                text: text,
+                tokens: tokens,
+                element: card
+            });
+        });
+
+        // Index skills
+        const skillsSection = document.getElementById('skills');
+        if (skillsSection) {
+            const text = skillsSection.innerText || '';
+            pageIndex.push({
+                id: 'skills-detail',
+                type: 'skills',
+                text: text,
+                tokens: tokenize(text),
+                element: skillsSection
+            });
+        }
+    }
+
+    // BM25 ranking
+    function bm25Score(queryTokens, docTokens, avgDocLength, totalDocs, docFreq) {
+        const k1 = 1.5, b = 0.75;
+        let score = 0;
+        const docLength = docTokens.length;
+        const docTermFreq = {};
+        docTokens.forEach(t => docTermFreq[t] = (docTermFreq[t] || 0) + 1);
+
+        for (const term of queryTokens) {
+            const tf = docTermFreq[term] || 0;
+            if (tf === 0) continue;
+            const df = docFreq[term] || 1;
+            const idf = Math.log(1 + (totalDocs - df + 0.5) / (df + 0.5));
+            const norm = (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * (docLength / avgDocLength)));
+            score += idf * norm;
+        }
+        return score;
+    }
+
+    let docFreqMap = {};
+    let totalDocs = 0;
+    let avgDocLength = 0;
+
+    function prepareBM25() {
+        buildPageIndex();
+        totalDocs = pageIndex.length;
+        const allTokens = [];
+        pageIndex.forEach(doc => {
+            allTokens.push(...doc.tokens);
+        });
+        avgDocLength = allTokens.length / totalDocs;
+        const df = {};
+        pageIndex.forEach(doc => {
+            const uniqueTerms = new Set(doc.tokens);
+            uniqueTerms.forEach(term => df[term] = (df[term] || 0) + 1);
+        });
+        docFreqMap = df;
+    }
+
+    // Enhanced query resolution using BM25 for sections and projects
+    function resolveWithBM25(queryText, done) {
+        const tokens = removeStopwords(tokenize(queryText));
+        if (pageIndex.length === 0) prepareBM25();
+
+        let bestDoc = null;
+        let bestScore = 0;
+        pageIndex.forEach(doc => {
+            const score = bm25Score(tokens, doc.tokens, avgDocLength, totalDocs, docFreqMap);
+            if (score > bestScore) {
+                bestScore = score;
+                bestDoc = doc;
+            }
+        });
+
+        if (bestDoc && bestScore > 1.5) {
+            if (bestDoc.type === 'project') {
+                const card = bestDoc.element;
+                const title = bestDoc.id;
+                const sumEl = card.querySelector('.p-sum');
+                const link = card.querySelector('.p-link');
+                const snippet = title + (sumEl ? '\n' + sumEl.textContent.trim() : '') + (link ? '\nSay "open" to jump to the code.' : '');
+                if (link && detectOpenCodeVerb(queryText)) {
+                    window.open(link.href, '_blank', 'noopener');
+                    lastMentionedProject = title;
+                    done(`Opening the code for "${title}" in a new tab.`, card);
+                } else {
+                    lastMentionedProject = title;
+                    done(snippet, card);
+                }
+                return;
+            } else if (bestDoc.type === 'section') {
+                lastMentionedSection = bestDoc.id;
+                const summary = generateSectionSummary(bestDoc.id) || bestDoc.text.slice(0, 200) + '...';
+                done(summary, bestDoc.element);
+                return;
+            } else if (bestDoc.type === 'skills') {
+                const summary = generateSectionSummary('skills') || 'Here are my skills.';
+                done(summary, document.getElementById('skills'));
+                return;
+            }
+        }
+
+        // If no strong match but some candidates exist, offer them
+        const candidates = pageIndex
+            .filter(doc => doc.type === 'project' || doc.type === 'section')
+            .map(doc => ({ doc, score: bm25Score(tokens, doc.tokens, avgDocLength, totalDocs, docFreqMap) }))
+            .filter(item => item.score > 0.5)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 3)
+            .map(item => item.doc.id);
+
+        if (candidates.length > 0) {
+            done(`I'm not 100% sure what you mean. Did you want to know about:\n${candidates.map(c => '• ' + c).join('\n')}`, null, candidates);
+            return;
+        }
+
+        done("I couldn't find exactly what you asked for.\nTry rephrasing, or say \"help\" to see everything I can do.", null, ['Help', 'Projects', 'Skills', 'Contact']);
+    }
+
+    // Simple sentiment analysis
+    const POSITIVE_WORDS = new Set(['great', 'awesome', 'nice', 'cool', 'love', 'good', 'thanks', 'thank', 'helpful', 'fantastic', 'excellent']);
+    const NEGATIVE_WORDS = new Set(['bad', 'terrible', 'awful', 'hate', 'angry', 'frustrated', 'disappointed', 'useless', 'poor', 'worst', 'not working']);
+
+    function analyzeSentiment(text) {
+        const tokens = tokenize(text);
+        let pos = 0, neg = 0;
+        tokens.forEach(t => {
+            if (POSITIVE_WORDS.has(t)) pos++;
+            else if (NEGATIVE_WORDS.has(t)) neg++;
+        });
+        if (pos > neg) return 'positive';
+        if (neg > pos) return 'negative';
+        return 'neutral';
+    }
+
+    // Web Speech API integration
+    function initVoiceInput() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        const micBtn = document.createElement('button');
+        micBtn.type = 'button';
+        micBtn.className = 'chat-mic';
+        micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        micBtn.setAttribute('aria-label', 'Use voice input');
+        const chatForm = document.getElementById('chatForm');
+        if (!chatForm) return;
+
+        // Insert mic button before the send button if present, otherwise just append.
+        const sendBtn = chatForm.querySelector('.chat-send');
+        if (sendBtn) {
+            chatForm.insertBefore(micBtn, sendBtn);
+        } else {
+            chatForm.appendChild(micBtn);
+        }
+
+        micBtn.addEventListener('click', () => {
+            recognition.start();
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            const input = document.getElementById('chatInput');
+            input.value = transcript;
+            // Submit the form
+            chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        };
+
+        recognition.onerror = (event) => {
+            console.log('Speech recognition error', event.error);
+        };
+    }
+
+    // ========================
+    // DYNAMIC PROJECT LOADING
+    // ========================
+    let PROJECTS_DATA = [];   // holds the loaded project objects
+
+    async function loadProjects() {
+        try {
+            const response = await fetch('data/projects.json');
+            if (!response.ok) throw new Error('Failed to load projects.json');
+            PROJECTS_DATA = await response.json();
+
+            // Featured: sort by rank ascending, then date descending
+            const featuredProjects = [...PROJECTS_DATA]
+                .sort((a, b) => {
+                    if (a.rank !== b.rank) return a.rank - b.rank;
+                    return new Date(b.date) - new Date(a.date);
+                })
+                .slice(0, 3); // top 3
+
+            renderFeatured(featuredProjects);
+            renderProjects(PROJECTS_DATA); // all projects in archive
+
+            // Re‑initialize filter and BM25 index after projects are rendered
+            initFilter();
+            learnVocabularyFromPage();
+            prepareBM25();
+        } catch (err) {
+            console.error('Could not load projects.json:', err);
+        }
+    }
+
+    function renderFeatured(projects) {
+        const grid = document.getElementById('spotlightGrid');
+        if (!grid) return;
+        grid.innerHTML = ''; // clear any loading placeholder
+
+        projects.forEach((project, index) => {
+            const article = document.createElement('article');
+            article.className = `spotlight reveal${index === 0 ? ' feat' : ''}`;
+            article.style.setProperty('--rd', (index * 0.06) + 's');
+
+            // Badge
+            let badge = '';
+            if (index === 0) {
+                badge = `<span class="spot-badge spot-badge-top">Top Pick</span>`;
+            } else if (project.rank <= 3) {
+                badge = `<span class="spot-badge spot-badge-new">New</span>`;
+            }
+
+            // Media placeholder
+            const media = `
+                <div class="spot-media">
+                    <span class="spot-media-ph">screenshot / demo</span>
+                    <span class="spot-index">0${index+1}</span>
+                </div>
+            `;
+
+            // Body
+            const body = `
+                <div class="spot-body">
+                    <h3>${project.title}</h3>
+                    <p>${project.summary}</p>
+                    <div class="spot-tags">
+                        ${project.stack.map(tag => `<span>${tag}</span>`).join('')}
+                    </div>
+                    ${project.link ? `<a href="${project.link}" target="_blank" rel="noopener noreferrer" class="p-link spot-link">View project <i class="fas fa-arrow-right"></i></a>` : ''}
+                </div>
+            `;
+
+            article.innerHTML = badge + media + body;
+            grid.appendChild(article);
+        });
+
+        // Observe reveal animations for new cards
+        const newCards = grid.querySelectorAll('.spotlight.reveal:not(.in)');
+        if (newCards.length && !prefersReduced) {
+            const rIo = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in');
+                        rIo.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            newCards.forEach(el => rIo.observe(el));
+        } else if (prefersReduced) {
+            newCards.forEach(el => el.classList.add('in'));
+        }
+    }
+
+    function renderProjects(projects) {
+        const grid = document.getElementById('projGrid');
+        if (!grid) return;
+        grid.innerHTML = ''; // clear any loading placeholder
+
+        projects.forEach((project, index) => {
+            const card = document.createElement('article');
+            card.className = 'p-card reveal';
+            card.setAttribute('data-cat', project.category);
+            card.style.setProperty('--rd', (index * 0.03) + 's');
+
+            const badgeClass = project.category; // ml, web, software, research
+            const badgeLabel = project.category === 'ml' ? 'ML / Data' :
+                               project.category === 'web' ? 'Web' :
+                               project.category === 'software' ? 'Software' :
+                               'Research';
+
+            let footHTML = '';
+            if (project.link) {
+                footHTML = `<a href="${project.link}" target="_blank" rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>`;
+            } else {
+                footHTML = `<span class="p-norepo">${project.context === 'Research Initiative' ? 'Proposal - development paused during academics' : 'No public repo'}</span>`;
+            }
+
+            card.innerHTML = `
+                <div class="p-head">
+                    <span class="p-badge ${badgeClass}">${badgeLabel}</span>
+                    <span class="p-ctx">${project.context}</span>
+                </div>
+                <h3 class="p-title">${project.title}</h3>
+                <p class="p-sum">${project.summary}</p>
+                <div class="p-stack">
+                    ${project.stack.map(tag => `<span>${tag}</span>`).join('')}
+                </div>
+                <div class="p-foot">${footHTML}</div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+        // Observe reveal animations for new cards
+        const newCards = grid.querySelectorAll('.p-card.reveal:not(.in)');
+        if (newCards.length && !prefersReduced) {
+            const rIo = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in');
+                        rIo.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            newCards.forEach(el => rIo.observe(el));
+        } else if (prefersReduced) {
+            newCards.forEach(el => el.classList.add('in'));
+        }
+    }
+
+    // ========================
+    // INIT CHAT WIDGET
+    // ========================
     function initChatWidget() {
         const bubble = document.getElementById('chatBubble');
         const panel = document.getElementById('chatPanel');
@@ -1489,6 +2203,19 @@ function runCircularReveal(applyChange, originEl) {
             handleChatUserText(text);
         });
 
+        // Restore chat history if any exists
+        loadChatHistory();
+        const box = document.getElementById('chatMessages');
+        if (box && chatHistory.length) {
+            chatHistory.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `chat-message ${msg.role}`;
+                div.textContent = msg.role === 'bot' ? cleanBotText(msg.content) : msg.content;
+                box.appendChild(div);
+            });
+            box.scrollTop = box.scrollHeight;
+        }
+
         // The rule data (canned replies, section summaries, etc.) loads
         // async from chatbot-rules.json, so the textarea and send button
         // stay disabled until it resolves - this guards against the user
@@ -1508,10 +2235,13 @@ function runCircularReveal(applyChange, originEl) {
             if (send) send.disabled = chatBusy;
             if (chatRulesFailed) {
                 botReply("Heads up - I couldn't load my response data just now, so some answers may be limited. Refreshing the page usually fixes it. Direct actions like opening links, filtering projects, and the contact form still work fine.", { delay: 500 });
+            } else if (!chatHistory.length) {
+                botReply("Hi! I'm Amika's assistant.\nAsk about projects, skills, or background - I can open links, filter projects, fill the contact form, or surprise you with a random pick.\nSay \"help\" for the full menu.", { delay: 600 });
             }
         });
 
-        botReply("Hi! I'm Amika's assistant.\nAsk about projects, skills, or background - I can open links, filter projects, fill the contact form, or surprise you with a random pick.\nSay \"help\" for the full menu.", { delay: 600 });
+        // Initialize voice input
+        initVoiceInput();
     }
 
     function initContactChooser() {
@@ -1547,20 +2277,30 @@ function runCircularReveal(applyChange, originEl) {
     // INIT
     // ========================
     function init() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(error => {
+                console.error('Service worker registration failed', error);
+            });
+        }
+
         initTheme();
         initMotion();
-        initFilter();
+        initFilter();        // attach filter buttons (static)
         initCopyEmail();
         initForm();
-        learnVocabularyFromPage();
         initChatWidget();
         initContactChooser();
         initEasterEggs();
-        initReveal();
-        initBars();
+        initReveal();        // observe static reveal elements
+        initBars();          // animate skill bars and education progress
         startTypewriter();
         startCounters();
         runPreloader();
+
+        // Load projects asynchronously, then re-learn vocab and prepare BM25
+        loadProjects().then(() => {
+            // (Filter, vocabulary, and BM25 are handled inside loadProjects)
+        });
     }
 
     if (document.readyState === 'loading') {

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#08080f">
+    <title>You're Offline · Amika Alankara</title>
+    <meta name="description" content="No internet connection right now - but this page doesn't need one.">
+
+    <!--
+      Deliberately zero external requests: no Google Fonts, no icon CDN,
+      no images. If you're seeing this, you're offline - so nothing here
+      should try to phone home. Fonts fall back to a condensed system
+      stack that apes the site's Bebas Neue display look.
+    -->
+    <style>
+        :root {
+            --bg: #08080f;
+            --bg-1: #0f0f18;
+            --bg-2: #16162a;
+            --text: #f1f1f6;
+            --text-dim: #9494ab;
+            --text-faint: #55556b;
+            --border: rgba(255, 255, 255, .09);
+            --border-soft: rgba(255, 255, 255, .05);
+            --accent: #6c63ff;
+            --accent-2: #8b85ff;
+            --accent-soft: rgba(108, 99, 255, .14);
+            --gold: #f2b544;
+            --live: #2ee6a6;
+            --offline: #ff5c72;
+            --offline-soft: rgba(255, 92, 114, .14);
+            --glass-bg: rgba(255, 255, 255, .07);
+            --glass-border: rgba(255, 255, 255, .16);
+            --glass-highlight: rgba(255, 255, 255, .4);
+            --glass-blur: 22px;
+            --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
+            --font-d: 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+            --font-b: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-m: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+            --r-sm: .5rem;
+            --r-md: .9rem;
+            --r-lg: 1.4rem;
+            --r-full: 999px;
+            --ease: cubic-bezier(.2, .8, .2, 1);
+            --pad: clamp(1.25rem, 5vw, 3rem);
+            color-scheme: dark;
+        }
+
+        html[data-theme="light"] {
+            --bg: #f6f5f1;
+            --bg-1: #ffffff;
+            --bg-2: #efeee9;
+            --text: #141419;
+            --text-dim: #5b5b6b;
+            --text-faint: #9393a3;
+            --border: rgba(20, 20, 25, .1);
+            --border-soft: rgba(20, 20, 25, .06);
+            --accent: #5850e6;
+            --accent-2: #453dcf;
+            --accent-soft: rgba(88, 80, 230, .1);
+            --gold: #a8701c;
+            --live: #0f9d6e;
+            --offline: #d6304a;
+            --offline-soft: rgba(214, 48, 74, .12);
+            --glass-bg: rgba(255, 255, 255, .5);
+            --glass-border: rgba(255, 255, 255, .7);
+            --glass-highlight: rgba(255, 255, 255, .85);
+            --shadow: 0 30px 60px -30px rgba(20, 20, 30, .18);
+            color-scheme: light;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-b);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            transition: background .3s var(--ease), color .3s var(--ease);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px; height: 1px;
+            padding: 0; margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(70px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-orb-1 { width: 380px; height: 380px; background: var(--accent); opacity: .28; top: -140px; right: -110px; }
+        .bg-orb-2 { width: 300px; height: 300px; background: var(--gold); opacity: .14; bottom: -120px; left: -90px; }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: .5;
+            background-image:
+                linear-gradient(var(--border-soft) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+            background-size: 42px 42px;
+            -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 20%, transparent 75%);
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 20%, transparent 75%);
+        }
+
+        .top-bar {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 1.1rem var(--pad) 0;
+        }
+
+        main {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 46rem;
+            padding: 2.5rem var(--pad) 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: .55rem;
+            font-family: var(--font-m);
+            font-size: .72rem;
+            letter-spacing: .06em;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            padding: .5rem .9rem;
+            border-radius: var(--r-full);
+            background: var(--bg-1);
+            margin-bottom: 1.6rem;
+        }
+
+        .live-dot {
+            position: relative;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--offline);
+            flex-shrink: 0;
+        }
+        .live-dot::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: var(--offline);
+            opacity: .5;
+            animation: dotpulse 1.8s ease-in-out infinite;
+        }
+        @keyframes dotpulse {
+            0%, 100% { opacity: 0; transform: scale(1); }
+            50% { opacity: .55; transform: scale(1.9); }
+        }
+
+        h1 {
+            font-family: var(--font-d);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .01em;
+            font-size: clamp(2.3rem, 8.5vw, 4.4rem);
+            line-height: .98;
+            margin: 0 0 1rem;
+        }
+
+        .subhead {
+            font-family: var(--font-m);
+            font-size: clamp(.82rem, 2vw, .98rem);
+            color: var(--text-dim);
+            margin: 0 0 1.1rem;
+        }
+        .subhead .arrow { color: var(--accent-2); }
+        .subhead .out { color: var(--text); }
+
+        .desc {
+            font-family: var(--font-b);
+            color: var(--text-dim);
+            font-size: .95rem;
+            line-height: 1.65;
+            max-width: 40ch;
+            margin: 0 0 2.6rem;
+        }
+
+        .comic {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .9rem;
+            width: 100%;
+            margin-bottom: 1.8rem;
+        }
+        @media (max-width: 620px) {
+            .comic { grid-template-columns: 1fr; max-width: 240px; }
+        }
+
+        .panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--r-lg);
+            box-shadow: inset 0 1px 0 0 var(--glass-highlight), var(--shadow);
+            padding: 1.1rem .8rem .9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .55rem;
+        }
+        .panel svg { width: 100%; max-width: 118px; height: auto; overflow: visible; }
+        .panel figcaption {
+            font-family: var(--font-m);
+            font-size: .66rem;
+            letter-spacing: .01em;
+            color: var(--text-faint);
+        }
+
+        .bars-2 rect { animation: flicker 2.4s ease-in-out infinite; }
+        @keyframes flicker { 0%, 100% { opacity: 1; } 45% { opacity: .35; } 55% { opacity: 1; } }
+
+        .term {
+            width: 100%;
+            max-width: 30rem;
+            background: var(--bg-1);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            text-align: left;
+            font-family: var(--font-m);
+            font-size: .8rem;
+            color: var(--text-dim);
+            overflow: hidden;
+            margin-bottom: 2.2rem;
+        }
+        .term-head {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .6rem .8rem;
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .term-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .term-head span:last-child {
+            margin-left: .5rem;
+            color: var(--text-faint);
+            font-size: .7rem;
+        }
+        .term-body { padding: .85rem .9rem 1rem; }
+        .term-body p { margin: 0 0 .5rem; }
+        .term-cmd { color: var(--text); }
+        .term-cmd::before { content: '$ '; color: var(--live); }
+        #termStatus { color: var(--text-dim); }
+        .cursor { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .term-loss { color: var(--text-faint); font-size: .74rem; margin-top: .3rem !important; }
+        .term-loss b { color: var(--offline); font-weight: 600; }
+
+        .cta-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-family: var(--font-m);
+            font-size: .8rem;
+            letter-spacing: .02em;
+            padding: .9rem 1.6rem;
+            border-radius: var(--r-full);
+            display: inline-flex;
+            align-items: center;
+            gap: .55rem;
+            border: 1px solid var(--accent);
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform .2s var(--ease), opacity .2s var(--ease);
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn[disabled] { opacity: .7; cursor: default; transform: none; }
+        .btn svg { flex-shrink: 0; transition: transform .5s var(--ease); }
+        .btn.spinning svg { animation: spin .7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .icon-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color .2s var(--ease);
+        }
+        .icon-btn:hover { border-color: var(--accent); }
+        .icon-btn svg { width: 17px; height: 17px; }
+
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        footer {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 32rem;
+            text-align: center;
+            font-family: var(--font-m);
+            font-size: .7rem;
+            color: var(--text-faint);
+            border-top: 1px solid var(--border-soft);
+            padding: 1.2rem var(--pad) 1.6rem;
+            line-height: 1.7;
+        }
+        footer strong { color: var(--text-dim); font-weight: 500; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-1" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-2" aria-hidden="true"></div>
+
+    <div class="top-bar">
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+            <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+            </svg>
+        </button>
+    </div>
+
+    <main>
+        <div class="eyebrow"><span class="live-dot"></span>CONNECTION · OFFLINE</div>
+
+        <h1>Looks like the<br>wi-fi ghosted you.</h1>
+
+        <p class="subhead"><span class="out">model.predict(your_wifi)</span> <span class="arrow">→</span> "it's not
+            coming back tonight"</p>
+
+        <p class="desc">Your device is offline, but this page isn't going anywhere - no CDN fonts, no icon
+            libraries, no server calls. Just this tab and an empty network log.</p>
+
+        <p class="sr-only">A three-panel comic: a small rounded router character is calm and fully connected with
+            three signal bars. In the next panel it looks anxious as its signal flickers down to one bar. In the
+            final panel its antennae droop, its eyes become crosses, and a red "no signal" badge appears in the
+            corner.</p>
+
+        <div class="comic" aria-hidden="true">
+            <figure class="panel">
+                <svg viewBox="0 0 160 170" role="img">
+                    <rect x="66" y="10" width="8" height="14" rx="2" style="fill:var(--live)" />
+                    <rect x="80" y="4" width="8" height="20" rx="2" style="fill:var(--live)" />
+                    <rect x="94" y="-2" width="8" height="26" rx="2" style="fill:var(--live)" />
+                    <line x1="55" y1="55" x2="40" y2="22" style="stroke:var(--text)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <line x1="105" y1="55" x2="120" y2="22" style="stroke:var(--text)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <circle cx="40" cy="22" r="5" style="fill:var(--accent)" />
+                    <circle cx="120" cy="22" r="5" style="fill:var(--accent)" />
+                    <rect x="37" y="55" width="86" height="86" rx="22" style="fill:var(--bg-2);stroke:var(--text)"
+                        stroke-width="3" />
+                    <circle cx="63" cy="95" r="6" style="fill:var(--text)" />
+                    <circle cx="97" cy="95" r="6" style="fill:var(--text)" />
+                    <path d="M62 111 Q80 124 98 111" style="stroke:var(--text)" stroke-width="3" fill="none"
+                        stroke-linecap="round" />
+                </svg>
+                <figcaption>10:41 PM - vibes immaculate</figcaption>
+            </figure>
+
+            <figure class="panel">
+                <svg viewBox="0 0 160 170" role="img" class="bars-2">
+                    <rect x="66" y="24" width="8" height="10" rx="2" style="fill:var(--text-faint)" />
+                    <rect x="80" y="18" width="8" height="16" rx="2" style="fill:var(--text-faint)" />
+                    <rect x="94" y="6" width="8" height="18" rx="2" style="fill:var(--gold)" />
+                    <line x1="55" y1="55" x2="42" y2="26" style="stroke:var(--text)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <line x1="105" y1="55" x2="118" y2="26" style="stroke:var(--text)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <circle cx="42" cy="26" r="5" style="fill:var(--accent)" />
+                    <circle cx="118" cy="26" r="5" style="fill:var(--accent)" />
+                    <path d="M124 60 q6 8 0 16" style="stroke:var(--accent-2)" stroke-width="3" fill="none"
+                        stroke-linecap="round" />
+                    <rect x="37" y="55" width="86" height="86" rx="22" style="fill:var(--bg-2);stroke:var(--text)"
+                        stroke-width="3" />
+                    <path d="M57 84 l10 6 M69 84 l-10 6" style="stroke:var(--text)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <path d="M91 84 l10 6 M103 84 l-10 6" style="stroke:var(--text)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <circle cx="63" cy="97" r="5" style="fill:var(--text)" />
+                    <circle cx="97" cy="97" r="5" style="fill:var(--text)" />
+                    <path d="M62 116 Q70 112 80 116 Q90 120 98 116" style="stroke:var(--text)" stroke-width="3"
+                        fill="none" stroke-linecap="round" />
+                </svg>
+                <figcaption>10:42 PM - bars: 1, hope: less</figcaption>
+            </figure>
+
+            <figure class="panel">
+                <svg viewBox="0 0 160 170" role="img">
+                    <rect x="66" y="30" width="8" height="6" rx="2" style="fill:var(--text-faint)" />
+                    <rect x="80" y="30" width="8" height="6" rx="2" style="fill:var(--text-faint)" />
+                    <rect x="94" y="30" width="8" height="6" rx="2" style="fill:var(--text-faint)" />
+                    <path d="M55 55 Q46 44 38 46" style="stroke:var(--text-faint)" stroke-width="3" fill="none"
+                        stroke-linecap="round" />
+                    <path d="M105 55 Q114 44 122 46" style="stroke:var(--text-faint)" stroke-width="3" fill="none"
+                        stroke-linecap="round" />
+                    <circle cx="38" cy="46" r="5" style="fill:var(--text-faint)" />
+                    <circle cx="122" cy="46" r="5" style="fill:var(--text-faint)" />
+                    <rect x="37" y="55" width="86" height="86" rx="22" style="fill:var(--bg-2);stroke:var(--text)"
+                        stroke-width="3" />
+                    <path d="M57 90 l12 12 M69 90 l-12 12" style="stroke:var(--offline)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <path d="M91 90 l12 12 M103 90 l-12 12" style="stroke:var(--offline)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <line x1="66" y1="118" x2="94" y2="118" style="stroke:var(--text)" stroke-width="3"
+                        stroke-linecap="round" />
+                    <path d="M80 141 Q86 156 76 162 L64 168" style="stroke:var(--text-faint)" stroke-width="3"
+                        fill="none" stroke-linecap="round" />
+                    <rect x="52" y="163" width="16" height="10" rx="2"
+                        style="fill:var(--bg-2);stroke:var(--text-faint)" stroke-width="2" />
+                    <circle cx="132" cy="34" r="14" style="fill:var(--offline)" />
+                    <path d="M126 28 l12 12 M138 28 l-12 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+                <figcaption>10:43 PM - F5, F5, F5</figcaption>
+            </figure>
+        </div>
+
+        <div class="term" aria-live="polite">
+            <div class="term-head">
+                <span class="term-dot" style="background:var(--offline)"></span>
+                <span class="term-dot" style="background:var(--gold)"></span>
+                <span class="term-dot" style="background:var(--live)"></span>
+                <span>reconnect.sh</span>
+            </div>
+            <div class="term-body">
+                <p class="term-cmd">./reconnect.sh --retry</p>
+                <p id="termStatus">pinging 8.8.8.8 ...<span class="cursor">▍</span></p>
+                <p class="term-loss">packets lost to the void: <b id="lossCount">0</b></p>
+            </div>
+        </div>
+
+        <div class="cta-row">
+            <button class="btn" id="retryBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 12a9 9 0 1 1-2.6-6.4" />
+                    <polyline points="21 3 21 9 15 9" />
+                </svg>
+                <span id="retryLabel">Retry connection</span>
+            </button>
+        </div>
+    </main>
+
+    <footer>
+        This is the only page on this site that works with no internet connection. Mildly proud of that.<br>
+        <strong>Amika Alankara</strong> · offline, not gone
+    </footer>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ---- theme (mirrors the main site's aa_theme key/logic) ----
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                var icon = document.getElementById('themeIcon');
+                var MOON = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />';
+                var SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+                if (icon) icon.innerHTML = theme === 'dark' ? MOON : SUN;
+                try { localStorage.setItem('aa_theme', theme); } catch (e) { /* storage unavailable */ }
+            }
+
+            (function initTheme() {
+                var theme = 'dark';
+                try {
+                    var saved = localStorage.getItem('aa_theme');
+                    if (saved) theme = saved;
+                    else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+                } catch (e) { /* ignore */ }
+                applyTheme(theme);
+            })();
+
+            var themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function () {
+                    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    applyTheme(next);
+                });
+            }
+
+            // ---- rotating terminal status lines ----
+            var lines = [
+                'pinging 8.8.8.8 ...',
+                "checking if the router's unplugged (it's not) ...",
+                "checking if the router's unplugged (it is) ...",
+                'asking IT (there is no IT) ...',
+                'negotiating with the ISP telepathically ...',
+                'still nothing ...'
+            ];
+            var li = 0;
+            var statusEl = document.getElementById('termStatus');
+            var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            function showLine(text) {
+                if (!statusEl) return;
+                statusEl.innerHTML = text + '<span class="cursor">▍</span>';
+            }
+
+            if (!reducedMotion) {
+                setInterval(function () {
+                    li = (li + 1) % lines.length;
+                    showLine(lines[li]);
+                }, 2400);
+            }
+
+            // ---- packet-loss counter (a joke stat, not a real diagnostic) ----
+            var loss = 0;
+            var lossEl = document.getElementById('lossCount');
+            if (lossEl && !reducedMotion) {
+                setInterval(function () {
+                    loss += Math.floor(Math.random() * 37) + 3;
+                    lossEl.textContent = loss.toLocaleString();
+                }, 1000);
+            }
+
+            // ---- real connectivity check ----
+            // navigator.onLine / the 'online' event only report whether the
+            // OS thinks a network interface is up - that's true the moment
+            // wifi reconnects even if there's no actual route to the
+            // internet yet (captive portals, a router still booting, DNS
+            // still down). So instead of trusting that flag alone, actually
+            // try to fetch something and see if it succeeds.
+            var checking = false;
+            function checkConnection(onFail) {
+                if (checking) return;
+                checking = true;
+                fetch(location.href, { method: 'HEAD', cache: 'no-store' })
+                    .then(function (res) {
+                        checking = false;
+                        if (res && res.ok) {
+                            showLine('back online - reloading…');
+                            setTimeout(function () { location.reload(); }, 700);
+                        } else if (onFail) onFail();
+                    })
+                    .catch(function () {
+                        checking = false;
+                        if (onFail) onFail();
+                    });
+            }
+
+            // Poll quietly in the background while offline. 5s is frequent
+            // enough to feel automatic without hammering anything once the
+            // connection actually returns.
+            if (!reducedMotion) {
+                setInterval(function () { checkConnection(); }, 5000);
+            }
+
+            // Also check immediately whenever the OS reports a network
+            // change - usually right, and checking costs nothing when wrong.
+            window.addEventListener('online', function () { checkConnection(); });
+
+            // ---- retry button ----
+            var btn = document.getElementById('retryBtn');
+            var label = document.getElementById('retryLabel');
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    if (btn.disabled) return;
+                    btn.disabled = true;
+                    btn.classList.add('spinning');
+                    label.textContent = 'retrying…';
+                    checkConnection(function () {
+                        btn.classList.remove('spinning');
+                        btn.disabled = false;
+                        label.textContent = 'Retry connection';
+                        showLine('still offline. rude.');
+                    });
+                    // safety net in case the fetch hangs instead of failing outright
+                    setTimeout(function () {
+                        if (btn.disabled) {
+                            btn.classList.remove('spinning');
+                            btn.disabled = false;
+                            label.textContent = 'Retry connection';
+                        }
+                    }, 6000);
+                });
+            }
+        })();
+    </script>
+</body>
+
+</html>
