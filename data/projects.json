@@ -1,0 +1,172 @@
+[
+  {
+    "title": "Telco Customer Churn Prediction",
+    "category": "ml",
+    "context": "CM2604 Coursework",
+    "summary": "Predicts which telecom customers will churn so businesses can intervene before losing them. End-to-end pipeline across 7,000+ records with three models compared.",
+    "stack": ["Python", "Pandas", "Scikit-learn", "Jupyter"],
+    "link": "https://github.com/Amika1118/CM2604-Telco-Churn-Prediction",
+    "rank": 1,
+    "date": "2024-06-15"
+  },
+  {
+    "title": "Sri Lanka Fuel Price Intelligence Pipeline",
+    "category": "ml",
+    "context": "Personal Project",
+    "summary": "An end-to-end AWS data pipeline ingesting global crude oil prices, USD/LKR exchange rates, and Sri Lankan retail fuel prices into a star-schema warehouse for BI dashboards.",
+    "stack": ["Python", "AWS S3", "AWS Glue", "Redshift"],
+    "link": "https://github.com/Amika1118/Sri-Lanka-fuel-price-intelligence-pipeline",
+    "rank": 2,
+    "date": "2025-01-10"
+  },
+  {
+    "title": "MARGA Research Hub",
+    "category": "web",
+    "context": "Client / Freelance",
+    "summary": "Browse, search, and filter research papers from Marga Institute and partner organizations - built entirely client-side over a structured paper archive.",
+    "stack": ["JavaScript", "HTML5", "CSS3"],
+    "link": "https://github.com/Amika1118/marga_web_2",
+    "rank": 3,
+    "date": "2024-11-20"
+  },
+  {
+    "title": "Colombo Transport Optimization",
+    "category": "ml",
+    "context": "CM2607 Coursework",
+    "summary": "Models and optimizes real traffic flow across Colombo's road network to identify bottlenecks and suggest routing improvements using linear programming.",
+    "stack": ["Python", "SciPy", "NumPy", "Jupyter"],
+    "link": "https://github.com/Amika1118/CM2607_Adavaned_Mathematics_Coursework",
+    "rank": 4,
+    "date": "2024-05-30"
+  },
+  {
+    "title": "Weather Prediction Model",
+    "category": "ml",
+    "context": "Personal Project",
+    "summary": "Predicts localized weather patterns - temperature, rainfall, humidity - to support agricultural planning and crop demand forecasting.",
+    "stack": ["Python", "Pandas", "Scikit-learn"],
+    "link": null,
+    "rank": 5,
+    "date": "2023-12-05"
+  },
+  {
+    "title": "Retail Price Prediction",
+    "category": "ml",
+    "context": "DSGP Coursework - Team Project",
+    "summary": "Group data science project modelling and forecasting retail pricing trends as part of the second-year Data Science Group Project.",
+    "stack": ["Python", "Machine Learning"],
+    "link": "https://github.com/Amika1118/DSGP_Group_38",
+    "rank": 6,
+    "date": "2024-04-18"
+  },
+  {
+    "title": "Audio Trimmer",
+    "category": "web",
+    "context": "Personal Project",
+    "summary": "A fully client-side web app for loading, previewing, trimming, and exporting audio - no upload, everything runs in the browser.",
+    "stack": ["JavaScript", "Web Audio API"],
+    "link": "https://github.com/Amika1118/audio-trimmer",
+    "rank": 7,
+    "date": "2023-11-01"
+  },
+  {
+    "title": "Lecture Notes Processor",
+    "category": "web",
+    "context": "Personal Project",
+    "summary": "Upload a lecture PDF and get an exam-focused summary and flashcards back in seconds - extracted fully in-browser, powered by Groq's Llama 3.3 70B.",
+    "stack": ["JavaScript", "PDF.js", "Groq API"],
+    "link": "https://github.com/Amika1118/lecture-processor",
+    "rank": 8,
+    "date": "2025-02-14"
+  },
+  {
+    "title": "MealMatch",
+    "category": "web",
+    "context": "Personal Project",
+    "summary": "A recommendation system that learns from Food.com ratings and personal likes to give tailored meal suggestions.",
+    "stack": ["JavaScript", "Recommender Systems"],
+    "link": "https://github.com/Amika1118/MealMatch",
+    "rank": 9,
+    "date": "2024-08-22"
+  },
+  {
+    "title": "Bookify",
+    "category": "web",
+    "context": "Personal Project",
+    "summary": "A complete online bookstore - browse, search, filter, cart, and checkout - fully client-side in React with dynamic state management.",
+    "stack": ["React", "JavaScript", "CSS3"],
+    "link": "https://github.com/Amika1118/Bookify",
+    "rank": 10,
+    "date": "2024-07-01"
+  },
+  {
+    "title": "Media Database Manager",
+    "category": "software",
+    "context": "Personal Project",
+    "summary": "CLI tool to organize personal collections of movies, TV series, and anime - search, filter, and analyze your library with full CRUD and SQL joins.",
+    "stack": ["Python", "SQLite", "CLI"],
+    "link": "https://github.com/Amika1118/media-database-manager",
+    "rank": 11,
+    "date": "2024-03-12"
+  },
+  {
+    "title": "Team Formation System",
+    "category": "software",
+    "context": "Personal Project",
+    "summary": "Automatically forms balanced esports tournament teams by factoring in player skill levels and personality assessments - not random assignment.",
+    "stack": ["Java", "OOP"],
+    "link": "https://github.com/Amika1118/Team-Formation-System",
+    "rank": 12,
+    "date": "2024-02-28"
+  },
+  {
+    "title": "Card Game",
+    "category": "software",
+    "context": "Personal Project",
+    "summary": "A classic trick-taking card game that runs in the terminal - play against 3 AI opponents, choose trumps, and try to win the most tricks.",
+    "stack": ["Python", "OOP", "Game AI"],
+    "link": "https://github.com/Amika1118/Card-Game",
+    "rank": 13,
+    "date": "2023-10-15"
+  },
+  {
+    "title": "Sliding Puzzle",
+    "category": "software",
+    "context": "Personal Project",
+    "summary": "A classic 8-puzzle implementation with 80+ solvable configurations, 4 difficulty levels, and multiple winning layouts - every puzzle guaranteed solvable.",
+    "stack": ["Python"],
+    "link": "https://github.com/Amika1118/Sliding-Puzzle",
+    "rank": 14,
+    "date": "2023-09-05"
+  },
+  {
+    "title": "PDF Architect",
+    "category": "software",
+    "context": "Personal Project",
+    "summary": "Converts images to PDFs with batch mode, parallel conversion, and smart sorting - usable as a CLI tool or a Python API.",
+    "stack": ["Python", "CLI"],
+    "link": "https://github.com/Amika1118/pdf-architect",
+    "rank": 15,
+    "date": "2023-08-01"
+  },
+  {
+    "title": "World Bank Data Fetcher",
+    "category": "software",
+    "context": "Personal Project",
+    "summary": "A zero-config CLI tool that searches the World Bank Open Knowledge Repository by topic, country, and year - exports to XML, CSV, JSON, or PDF with a live progress UI.",
+    "stack": ["Python", "CLI", "APIs"],
+    "link": "https://github.com/Amika1118/wb-fetcher",
+    "rank": 16,
+    "date": "2023-07-20"
+  },
+  {
+    "title": "Brain-to-Text BCI Research",
+    "category": "research",
+    "context": "Research Initiative",
+    "summary": "Technical proposal for a non-invasive EEG-to-text BCI, developed with faculty at University of Moratuwa and University of Kelaniya.",
+    "stack": ["EEG Analysis", "Signal Processing"],
+    "link": null,
+    "rank": 17,
+    "date": "2023-06-10"
+  }
+]
