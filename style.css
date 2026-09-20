@@ -1254,7 +1254,9 @@ html[data-theme="light"] .terminal {
 
 .p-foot {
     margin-top: .2rem;
-    display: flex
+    display: flex;
+    gap: 2.00rem;
+    flex-wrap: wrap
 }
 
 .p-link {
@@ -1264,6 +1266,18 @@ html[data-theme="light"] .terminal {
     font-family: var(--font-m);
     font-size: .74rem;
     color: var(--accent-2)
+}
+
+.p-secondary-link {
+    color: var(--b-web);
+}
+
+.p-demo-link {
+    color: var(--gold);
+}
+
+.p-how-link {
+    color: var(--b-research);
 }
 
 .p-norepo {
