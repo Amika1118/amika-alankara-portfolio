@@ -1108,7 +1108,7 @@ function runCircularReveal(applyChange, originEl) {
                     },
                     cannedReplies: [
                         { pattern: /help/i, reply: "I can tell you about projects, skills, education, open links, filter projects, fill the contact form, and more. Ask away!" },
-                        { pattern: /hello|hi|hey/i, reply: "Hi! I'm Amika's assistant. Ask about her work or say \"help\"." }
+                        { pattern: /hello|hi|hey/i, reply: "Hi! I'm Amika's assistant. Ask about his work or say \"help\"." } 
                     ],
                     sectionMap: [
                         { id: 'about', keys: ['about', 'background'] },
@@ -2097,9 +2097,16 @@ function runCircularReveal(applyChange, originEl) {
 
             let footHTML = '';
             if (project.link) {
-                footHTML = `<a href="${project.link}" target="_blank" rel="noopener noreferrer" class="p-link"><i class="fab fa-github"></i> View Code</a>`;
+                footHTML = `<a href="${project.link}" target="_blank" rel="noopener noreferrer" class="p-link p-code-link"><i class="fab fa-github"></i> View Code</a>`;
             } else {
                 footHTML = `<span class="p-norepo">${project.context === 'Research Initiative' ? 'Proposal - development paused during academics' : 'No public repo'}</span>`;
+            }
+
+            if (project.link_2 && project.why) {
+                const isDemo = /demo/i.test(project.why);
+                const secondaryLabel = isDemo ? 'demo' : 'See How It Works';
+                const secondaryClass = isDemo ? 'p-demo-link' : 'p-how-link';
+                footHTML += `<a href="${project.link_2}" target="_blank" rel="noopener noreferrer" class="p-link p-secondary-link ${secondaryClass}">${secondaryLabel} <i class="fas fa-arrow-up-right-from-square"></i></a>`;
             }
 
             card.innerHTML = `
