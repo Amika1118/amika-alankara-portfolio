@@ -55,7 +55,7 @@
     "context": "Personal Project",
     "summary": "A Python CLI music player with live controls, playlists, search, and a credit system that scores songs from listening behavior. An exponential-key-sampling shuffle algorithm boosts songs you love and buries the ones you skip, without ever locking rankings rigidly.",
     "stack": ["Python", "pygame", "mutagen"],
-    "link": "https://github.com/Amika1118/lucivyre",
+    "link": "https://lucivyre.vercel.app/",
     "rank": 6,
     "date": "2026-09-01"
 },
