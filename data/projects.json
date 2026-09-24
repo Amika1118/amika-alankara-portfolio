@@ -126,8 +126,8 @@
     "summary": "CLI tool to organize personal collections of movies, TV series, and anime - search, filter, and analyze your library with full CRUD and SQL joins.",
     "stack": ["Python", "SQLite", "CLI"],
     "link": "https://github.com/Amika1118/media-database-manager",
-    "link_2": null,
-    "why": null,
+    "link_2": "https://media-database-manager.amika-alankara.workers.dev/",
+    "why": "See How It Works",
     "rank": 11,
     "date": "2024-03-12"
   },
