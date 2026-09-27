@@ -197,9 +197,9 @@
     "context": "Research Initiative",
     "summary": "Technical proposal for a non-invasive EEG-to-text BCI, developed with faculty at University of Moratuwa and University of Kelaniya.",
     "stack": ["EEG Analysis", "Signal Processing"],
-    "link": null,
-    "link_2": null,
-    "why": null,
+    "link": "https://github.com/Amika1118/PixFold",
+    "link_2": "https://pixfold.amika-alankara.workers.dev/",
+    "why": demo,
     "rank": 17,
     "date": "2023-06-10"
   }
