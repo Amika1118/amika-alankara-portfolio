@@ -199,7 +199,7 @@
     "stack": ["EEG Analysis", "Signal Processing"],
     "link": "https://github.com/Amika1118/PixFold",
     "link_2": "https://pixfold.amika-alankara.workers.dev/",
-    "why": demo,
+    "why": "demo",
     "rank": 17,
     "date": "2023-06-10"
   }
