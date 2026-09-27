@@ -197,10 +197,22 @@
     "context": "Research Initiative",
     "summary": "Technical proposal for a non-invasive EEG-to-text BCI, developed with faculty at University of Moratuwa and University of Kelaniya.",
     "stack": ["EEG Analysis", "Signal Processing"],
+    "link": null,
+    "link_2": null,
+    "why": null;,
+    "rank": 17,
+    "date": "2025-10-10"
+  },
+  {
+    "title": "PixFold",
+    "category": "web",
+    "context": "personal project",
+    "summary": "A fast, privacy-first media converter that runs 100% locally in your browser. Convert PDFs to crisp images, or bundle image collections into custom PDFs without server uploads.",
+    "stack": ["pdf to images", "images to pdfs", "pixfold"],
     "link": "https://github.com/Amika1118/PixFold",
     "link_2": "https://pixfold.amika-alankara.workers.dev/",
     "why": "demo",
-    "rank": 17,
-    "date": "2023-06-10"
+    "rank": 18,
+    "date": "2026-09-25"
   }
 ]
