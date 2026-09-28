@@ -26,10 +26,10 @@
   {
     "title": "MARGA Research Hub",
     "category": "web",
-    "context": "Client / Freelance",
+    "context": "Client Work",
     "summary": "Browse, search, and filter research papers from Marga Institute and partner organizations - built entirely client-side over a structured paper archive.",
     "stack": ["JavaScript", "HTML5", "CSS3"],
-    "link": "https://github.com/Amika1118/marga_web_2",
+    "link": null,
     "link_2": "https://margaresearchhub.github.io/Research-Hub/",
     "why": "demo",
     "rank": 3,
