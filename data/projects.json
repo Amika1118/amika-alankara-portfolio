@@ -63,7 +63,7 @@
     "title": "Lucivyre",
     "category": "software",
     "context": "Personal Project",
-    "summary": "A Python command-line music player with live controls, playlists, search, a credit system, and an algorithmic shuffle that learns what you love — rewarding replayed songs and quietly burying skipped ones.",
+    "summary": "A Python command-line music player with live controls, playlists, search, a credit system, and an algorithmic shuffle that learns what you love - rewarding replayed songs and quietly burying skipped ones.",
     "stack": ["Python", "pygame", "mutagen"],
     "link": null,
     "link_2": "https://lucivyre.vercel.app/",
@@ -214,5 +214,17 @@
     "why": "demo",
     "rank": 18,
     "date": "2026-09-25"
+  },
+   {
+    "title": "PeekABooCode",
+    "category": "web",
+    "context": "personal project",
+    "summary": "PeekABooCode is a single-page web app that combines several everyday utilities into one lightweight tool",
+    "stack": ["qr", "qr reader", "generator", "bar code"],
+    "link": null,
+    "link_2": "https://peakaboocode.vercel.app/",
+    "why": "demo",
+    "rank": 19,
+    "date": "2026-10-03"
   }
 ]
