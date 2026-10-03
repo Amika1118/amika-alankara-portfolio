@@ -1,4 +1,4 @@
-### **Amika Alankara – AI & Data Science Portfolio**
+### **Amika Alankara - AI & Data Science Portfolio**
 
 This repository contains the source code for my professional portfolio and CV website. The site is intended to serve as an interactive resume for potential employers, collaborators, and academic peers.
 
@@ -20,11 +20,11 @@ This repository is intended **solely for demonstrating my work** to recruiters, 
 
 ## **Technologies Used**
 
-  * **HTML5** – Semantic markup.
-  * **CSS3** – Custom styling, responsive layout, and animations.
-  * **JavaScript (ES6+)** – Interactivity, form validation, and scroll effects.
-  * **Font Awesome 6** – Icons.
-  * **Google Fonts (Inter)** – Typography.
+  * **HTML5** - Semantic markup.
+  * **CSS3** - Custom styling, responsive layout, and animations.
+  * **JavaScript (ES6+)** - Interactivity, form validation, and scroll effects.
+  * **Font Awesome 6** - Icons.
+  * **Google Fonts (Inter)** - Typography.
 
 All code is original and implemented without external frameworks to ensure maximum performance and maintainability.
 
